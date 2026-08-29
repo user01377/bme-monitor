@@ -1,0 +1,7 @@
+[project]
+name="bme-data-receiver"
+version=0.1.0
+
+dependencies=[
+    "fastapi[latest]"
+]

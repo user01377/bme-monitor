@@ -1,0 +1,7 @@
+[project]
+name="bme-handler-in"
+version=0.1.0
+
+dependencies=[
+    "fastapi[latest]"
+]
