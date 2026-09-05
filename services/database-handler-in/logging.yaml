@@ -16,22 +16,3 @@ root:
   level: INFO
   handlers:
     - default
-
-loggers:
-  uvicorn:
-    level: INFO
-    handlers:
-      - default
-    propagate: false
-
-  uvicorn.error:
-    level: INFO
-    handlers:
-      - default
-    propagate: false
-
-  uvicorn.access:
-    level: INFO
-    handlers:
-      - default
-    propagate: false
