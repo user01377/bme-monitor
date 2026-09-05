@@ -3,7 +3,6 @@ from contextlib import asynccontextmanager
 from .redis_client import connect_redis
 from .routes import router
 from .database import Base, engine
-from .models import Device
 
 import logging
 
