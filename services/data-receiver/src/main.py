@@ -1,17 +1,21 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-
+from redis_client import connect_redis
 from routes import router
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # connection to redis
+    redis = await connect_redis()
 
-    # redis retry logic
+    app.state.redis = redis
 
     yield
 
-    # close connection to redis
+    await redis.aclose()
 
 app = FastAPI(lifespan=lifespan)
 
