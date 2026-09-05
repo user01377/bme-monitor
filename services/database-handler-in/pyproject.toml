@@ -1,7 +1,16 @@
-[project]
-name="bme-handler-in"
-version=0.1.0
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
 
+[project]
+name = "bme-data-receiver"
+version = "0.1.0"
+description = "The microservice which manipulates data from the redis queue and stores the data into database"
+
+requires-python = ">=3.12"
 dependencies=[
-    "fastapi[latest]"
+    "fastapi[latest]",
+    "redis",
+    "pydantic",
+    "sqlalchemy"
 ]
