@@ -16,6 +16,14 @@ services:
         - postgres_data:/var/lib/postgresql/data
       ports:
         - "5432:5432"
+
+  data-receiver:
+    build:
+      context: ./services/data-receiver
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+
         
 volumes:
   postgres_data:
