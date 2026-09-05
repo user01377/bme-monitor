@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, select
-from sqlalchemy.orm import DeclarativeBase, sessionmaker
+from sqlalchemy.orm import sessionmaker
 from .models import Device
 
 DATABASE_URL = "sqlite:///./devices.db"
@@ -8,9 +8,6 @@ engine = create_engine(
     DATABASE_URL,
     connect_args={"check_same_thread": False},
 )
-
-class Base(DeclarativeBase):
-    pass
 
 SessionLocal = sessionmaker(
     bind=engine,

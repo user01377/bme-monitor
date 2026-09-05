@@ -1,7 +1,7 @@
 from sqlalchemy import LargeBinary, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
-from .database import Base
+from .base import Base
 
 class Device(Base):
     __tablename__ = "devices"

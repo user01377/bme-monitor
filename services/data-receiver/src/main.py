@@ -2,7 +2,8 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from .redis_client import connect_redis
 from .routes import router
-from .database import Base, engine
+from .database import engine
+from .base import Base
 
 import logging
 
