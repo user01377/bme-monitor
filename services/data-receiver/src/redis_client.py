@@ -1,6 +1,7 @@
 import os
 import logging
 import asyncio
+from fastapi import Request
 from redis.asyncio import Redis
 from redis.exceptions import ConnectionError
 
@@ -37,3 +38,11 @@ async def connect_redis():
 
     await redis.aclose()
     raise RuntimeError("Redis connection failed.")
+
+def get_redis(request: Request):
+    redis = getattr(request.app.state, "redis", None)
+
+    if not redis:
+        raise RuntimeError("Redis is not initalized.")
+    
+    return redis
