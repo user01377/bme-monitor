@@ -5,10 +5,6 @@ from .routes import router
 from .database import engine
 from .base import Base
 
-import logging
-
-logger = logging.getLogger(__name__)
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     Base.metadata.create_all(engine)
