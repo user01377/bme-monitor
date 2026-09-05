@@ -1,7 +1,13 @@
-[project]
-name="bme-data-receiver"
-version=0.1.0
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
 
-dependencies=[
-    "fastapi[latest]"
+[project]
+name = "bme-data-receiver"
+version = "0.1.0"
+description = "The microservice which handles data reception from sensors"
+
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi[standard]"
 ]
