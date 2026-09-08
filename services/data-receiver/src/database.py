@@ -1,8 +1,12 @@
+import os
+from dotenv import load_dotenv
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
 from .models import Device
 
-DATABASE_URL = "sqlite:///./devices.db"
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 engine = create_engine(
     DATABASE_URL,
