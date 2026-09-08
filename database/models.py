@@ -1,6 +1,6 @@
 import datetime
 import enum
-from sqlalchemy import DateTime, func, Float
+from sqlalchemy import DateTime, func, Float, Enum, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 class Status(str, enum.Enum):
@@ -16,13 +16,13 @@ class SensorReads(Base):
     __tablename__ = "sensor_readings"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    device: Mapped[str] = mapped_column(str)
+    device: Mapped[str] = mapped_column(String)
 
     temp: Mapped[float] = mapped_column(Float)
     humidity: Mapped[float] = mapped_column(Float)
     pressure: Mapped[float] = mapped_column(Float)
 
-    status: Mapped[Status] = mapped_column(Status)
+    status: Mapped[Status] = mapped_column(Enum(Status), default=Status.VALID)
 
     timestamp: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), 
