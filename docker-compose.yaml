@@ -21,10 +21,14 @@ services:
     build:
       context: ./services/data-receiver
       dockerfile: Dockerfile
+    volumes:
+      - receiver_data:/data
     ports:
       - "8000:8000"
     env_file:
       - .env
+    environment:
+      DATABASE_URL: sqlite:////data/devices.db
   
   database-handler-in:
     build:
@@ -38,3 +42,4 @@ services:
         
 volumes:
   postgres_data:
+  receiver_data:
