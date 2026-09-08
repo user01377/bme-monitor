@@ -11,7 +11,9 @@ def create_redis():
     return Redis(
         host="redis",
         port=6379,
-        password=os.environ['REDIS_PASSWORD']
+        password=os.environ['REDIS_PASSWORD'],
+        socket_timeout=None,
+        decode_responses=True
     )
 
 async def connect_redis():
