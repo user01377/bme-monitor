@@ -1,4 +1,5 @@
 import logging
+import json
 import base64
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 from cryptography.exceptions import InvalidSignature
@@ -23,15 +24,15 @@ async def queue_data(payload: ReceiverIn, redis = Depends(get_redis)):
         raise HTTPException(status_code=401, detail="Authentication failed.")
     
     # device authentication logic, for cryptography handshake
-    data = base64.b64decode(payload.data)
-    signature = base64.b64decode(payload.signature)
+    data_json = json.dumps(payload.data.model_dump(), separators=(",", ":"), sort_keys=True)
     public_key = Ed25519PublicKey.from_public_bytes(device.public_key)
-
-    message = (payload.device_id.encode()) + payload.timestamp.to_bytes(8, "big") + data
+    message = (payload.device_id.encode("utf-8") + payload.timestamp.to_bytes(8, "big") + data_json.encode("utf-8"))
 
     try:
+        signature = base64.b64decode(payload.signature)
         public_key.verify(signature, message)
-    except InvalidSignature:
+
+    except (InvalidSignature, ValueError):
         raise HTTPException(status_code=401, detail="Authentication failed.")
 
     # push to redis queue
