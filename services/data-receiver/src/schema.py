@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-class SensorData:
+class SensorData(BaseModel):
     temperature: float
     humidity: float
     pressure: float
