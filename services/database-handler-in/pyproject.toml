@@ -12,5 +12,6 @@ dependencies=[
     "redis",
     "pydantic",
     "sqlalchemy",
-    "pyyaml"
+    "pyyaml",
+    "psycopg[binary]"
 ]
