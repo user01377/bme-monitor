@@ -8,9 +8,11 @@ COPY logging.yaml .
 
 COPY src/ ./src/
 
-COPY alembic/ ./alembic
+COPY alembic/ ./alembic/
 
 COPY alembic.ini .
+
+COPY scripts/ ./scripts/
 
 RUN pip install --no-cache-dir .
 
