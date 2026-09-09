@@ -17,7 +17,8 @@ def hash_token(token: str):
 def authenticate_user(token: str = Depends(api_key), db: Session = Depends(get_db)):
     token_hash = hash_token(token)
 
-    api_token = db.scalar(select(ApiToken).where(ApiToken.token_hash == token_hash))
+    api_token = db.scalar(select(ApiToken)
+                          .where(ApiToken.token_hash == token_hash, ApiToken.revoked_at.is_(None)))
 
     if not api_token:
         raise HTTPException(status_code=401, detail="Invalid API Token.")
