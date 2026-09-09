@@ -1,7 +1,13 @@
-[project]
-name="bme-server"
-version=0.1.0
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
 
+[project]
+name = "bme-data-server"
+version = "0.1.0"
+description = "The microservice which authenticates and handles API requests from clients"
+
+requires-python = ">=3.12"
 dependencies=[
-    "fastapi[latest]"
+    "fastapi[standard]"
 ]
