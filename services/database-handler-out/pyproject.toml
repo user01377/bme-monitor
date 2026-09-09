@@ -3,5 +3,7 @@ name="bme-handler-out"
 version=0.1.0
 
 dependencies=[
-    "fastapi[latest]"
+    "fastapi[latest]",
+    "sqlalchemy",
+    "pydantic"
 ]
