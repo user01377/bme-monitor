@@ -1,3 +1,4 @@
+import sys
 import hashlib
 import secrets
 
@@ -24,10 +25,14 @@ def seed_api_token(name: str):
         session.add(api_token)
         session.commit()
 
-    print("API token created successfully.")
+    print("API token created successfully. Please store this somewhere safe.")
     print(f"Name: {name}")
     print(f"Token: {token}")
 
 
 if __name__ == "__main__":
-    seed_api_token("test")
+    if len(sys.argv) != 2:
+        print("Usage: python -m scripts.generate_api_token <name>")
+        sys.exit(1)
+    
+    seed_api_token(sys.argv[1])
