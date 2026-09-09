@@ -8,6 +8,10 @@ COPY logging.yaml .
 
 COPY src/ ./src/
 
+COPY alembic/ ./alembic
+
+COPY alembic.ini .
+
 RUN pip install --no-cache-dir .
 
 CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8003", "--log-config", "logging.yaml"]
