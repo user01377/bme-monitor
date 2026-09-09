@@ -13,7 +13,7 @@ router = APIRouter()
 def get_health():
     return {"status": "ok"}
 
-@router.get("/average")
+@router.get("/average", response_model=AvgDataOut)
 def get_data(db: Session = Depends(get_db)):
     """
     Returns AVG of each data point
