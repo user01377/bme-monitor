@@ -220,4 +220,4 @@ __marimo__/
 # Project Stuff
 .DS_Store
 res-dock
-devices.db
+sqlite.db
