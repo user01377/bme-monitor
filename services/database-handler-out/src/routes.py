@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from .database import get_db
 from .models import SensorReads, Status
+from .schema import AvgDataOut
 
 router = APIRouter()
 
@@ -31,8 +32,8 @@ def get_data(db: Session = Depends(get_db)):
 
     result = db.execute(stmt).one()
 
-    return {
-        "temperature": result.temperature,
-        "humidity": result.humidity,
-        "pressure": result.pressure,
-    }
+    return AvgDataOut(
+        temperature=result.temperature,
+        humidity=result.humidity,
+        pressure=result.pressure
+    )
