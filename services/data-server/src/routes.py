@@ -1,4 +1,5 @@
 import hashlib
+import datetime
 from fastapi import APIRouter, HTTPException, Depends, Request
 from fastapi.security import APIKeyHeader
 from sqlalchemy import select
@@ -20,6 +21,10 @@ def authenticate_user(token: str = Depends(api_key), db: Session = Depends(get_d
 
     if not api_token:
         raise HTTPException(status_code=401, detail="Invalid API Token.")
+    
+    # on successful auth, update api tokens last used field
+    api_token.last_used_at = datetime.datetime.now(datetime.UTC)
+    db.commit()
     
     return api_token
 
