@@ -52,12 +52,17 @@ services:
     build:
       context: ./services/data-server
       dockerfile: Dockerfile
+    volumes:
+      - server_data:/data
     ports:
       - "8003:8003"
     env_file:
       - .env
+    environment:
+      DATABASE_URL: sqlite:////data/data-server.db
 
         
 volumes:
   postgres_data:
   receiver_data:
+  server_data:
