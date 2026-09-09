@@ -13,7 +13,7 @@ class ApiToken(Base):
 
     token_hash: Mapped[str] = mapped_column(String(64), unique=True, nullable=False, index=True)
 
-    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
 
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
