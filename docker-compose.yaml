@@ -48,6 +48,15 @@ services:
     env_file:
       - .env
 
+  data-server:
+    build:
+      context: ./services/data-server
+      dockerfile: Dockerfile
+    ports:
+      - "8003:8003"
+    env_file:
+      - .env
+
         
 volumes:
   postgres_data:
