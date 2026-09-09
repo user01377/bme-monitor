@@ -34,8 +34,17 @@ services:
     build:
       context: ./services/database-handler-in
       dockerfile: Dockerfile
+    expose:
+      - "8001"
+    env_file:
+      - .env
+  
+  database-handler-out:
+    build:
+      context: ./services/database-handler-out
+      dockerfile: Dockerfile
     ports:
-      - "8001:8001"
+      - "8002:8002"
     env_file:
       - .env
 
