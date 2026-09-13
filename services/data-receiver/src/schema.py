@@ -1,9 +1,9 @@
 from pydantic import BaseModel
 
 class SensorData(BaseModel):
-    temperature: float
-    humidity: float
-    pressure: float
+    temperature: int
+    humidity: int
+    pressure: int
 
 class ReceiverIn(BaseModel):
     device_id: str # unique id for node sending data
