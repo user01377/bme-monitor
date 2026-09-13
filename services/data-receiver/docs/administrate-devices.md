@@ -8,12 +8,25 @@ All scripts are located in the `scripts/` directory and **must be run from insid
 
 | Script                | Purpose                                             |
 | --------------------- | --------------------------------------------------- |
+| `list_devices`       | Lists all devices that are registered in the database|
 | `register_device`   | Registers a device and its public key               |
 | `unregister_device` | Removes a registered device                         |
 | `seed_test_device`  | Creates a test device for development and debugging |
 | `gen-payload`       | Generates a test HTTP request payload               |
 
 ---
+
+## Viewing All Registered Devices
+
+The `list_devices` script prints out all devices which are registered inside of the service's SQLite database.
+
+This script does not take any arguments.
+
+Run the script from inside the `data-receiver` container.
+
+```bash
+python -m scripts.list_devices
+```
 
 ## Registering a Device
 
