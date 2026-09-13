@@ -56,7 +56,7 @@ async def main():
                     pressure=json_data["data"]["pressure"],
                     status=Status.VALID,
                     timestamp=datetime.datetime.fromtimestamp(
-                        json_data["data"]["timestamp"],
+                        json_data["timestamp"],
                         tz=datetime.timezone.utc,
                     ),
                 )
