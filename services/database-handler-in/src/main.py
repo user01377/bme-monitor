@@ -46,6 +46,11 @@ async def main():
             # debugging log
             # logger.info("JSON DATA: %s", json_data)
 
+            # scale down data back to original size
+            json_data["data"]["temperature"] /= 100
+            json_data["data"]["humidity"] /= 100
+            json_data["data"]["pressure"] /= 100
+
             converted_temp = (json_data["data"]["temperature"] * 9/5) + 32
 
             with SessionLocal() as session:
