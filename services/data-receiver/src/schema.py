@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 
 class SensorData(BaseModel):
+    # incoming data are declar as ints due to integer scaling, see docs
     temperature: int
     humidity: int
     pressure: int

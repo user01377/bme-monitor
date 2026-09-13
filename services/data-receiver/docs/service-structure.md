@@ -20,9 +20,12 @@ The general data flow is:
 
 ```text
 ESP32 Node
+
     │
+
     │ HTTP request
     ▼
+
 ┌─────────────────────┐
 │   data-receiver     │
 │                     │
@@ -31,19 +34,30 @@ ESP32 Node
 │         ▼           │
 │   SQLite Database   │
 └─────────┬───────────┘
+
           │
+
           │ Authorized telemetry
+
           ▼
+
     ┌───────────┐
     │   Redis   │
     │   Queue   │
     └─────┬─────┘
+
           │
+
           │ Queued telemetry
+
           ▼
+
   Database Handler
+
           │
+
           ▼
+
       PostgreSQL
 ```
 
@@ -80,12 +94,12 @@ This route is the entry point for telemetry data sent by ESP32 nodes.
 The request is first validated to ensure that:
 
 1. The device is registered.
-2. The device is authorized to send data.
+2. The device's signature is valid.
 3. The telemetry payload is valid.
 
 If validation succeeds, the telemetry data is placed into the Redis queue for downstream processing.
 
-The route does not directly interact with PostgreSQL.
+The route does not directly interact with the PostgreSQL database.
 
 ---
 
@@ -95,7 +109,62 @@ The service maintains a local SQLite database containing information about regis
 
 The database is used to determine whether a device is authorized to submit telemetry data.
 
-Each registered device contains the information required by the service to authenticate requests from that device.
+Each registered device has a unique device ID and an associated Ed25519 public key. The corresponding private key is stored on the ESP32 node and is not transmitted to the `data-receiver` service.
+
+When an ESP32 sends telemetry data, it creates a digital signature using its private key. The `data-receiver` retrieves the device's registered public key from SQLite and uses it to verify the signature.
+
+### Signature Creation
+
+The ESP32 creates a signature over the following data:
+
+```text
+device_id + timestamp + telemetry data
+```
+
+Telemetry values are represented as **scaled integers** before being serialized for a deterministic JSON representation. The receiver reconstructs the same representation when verifying the signature.
+
+The signature therefore proves that:
+
+* The request was created by a device possessing the registered private key.
+* The signed telemetry data has not been modified after it was signed.
+
+The private key never leaves the ESP32.
+
+### Signature Verification
+
+The authentication process is:
+
+```text
+ESP32
+  │
+  ├─ Collect telemetry data
+  │
+  ├─ Construct canonical message
+  │
+  ├─ Sign message with private key
+  │
+  └─ Send device ID + telemetry + signature
+          │
+          ▼
+    data-receiver
+          │
+          ├─ Look up device ID in SQLite
+          │
+          ├─ Retrieve registered public key
+          │
+          ├─ Reconstruct canonical message
+          │
+          └─ Verify Ed25519 signature
+                 │
+          ┌──────┴──────┐
+          │             │
+        Valid         Invalid
+          │             │
+          ▼             ▼
+        Redis          Reject
+```
+
+The exact serialization and signing implementation is maintained by the ESP32 and `data-receiver` code. Any changes to the signed message format must be made consistently on both sides to preserve signature verification.
 
 Device registration and removal are handled through the administrative scripts located in the `scripts/` directory.
 
@@ -139,14 +208,18 @@ The downstream database handler is responsible for consuming the queued data and
 
 A typical telemetry request follows this process:
 
-1. An ESP32 node sends telemetry data to `data-receiver`.
-2. `data-receiver` identifies the device from the request.
-3. The device is looked up in the local SQLite database.
-4. The device's credentials are validated.
-5. The telemetry payload is validated.
-6. Authorized telemetry data is added to the Redis queue.
-7. The request is returned to the ESP32.
-8. A downstream service consumes the queued data.
-9. The downstream service processes and stores the data in PostgreSQL.
+1. An ESP32 node collects telemetry data.
+2. The ESP32 constructs the canonical message from the device ID, timestamp, and telemetry data.
+3. The ESP32 signs the message using its private Ed25519 key.
+4. The ESP32 sends the telemetry data and signature to `data-receiver`.
+5. `data-receiver` identifies the device from the request.
+6. The device is looked up in the local SQLite database.
+7. The device's registered public key is retrieved.
+8. The signature is verified using the registered public key.
+9. The telemetry payload is validated.
+10. Authorized telemetry data is added to the Redis queue.
+11. The request is returned to the ESP32.
+12. A downstream service consumes the queued data.
+13. The downstream service processes and stores the data in PostgreSQL.
 
 This separation keeps the `data-receiver` service focused on **ingestion and authentication**, while database processing is handled independently.
