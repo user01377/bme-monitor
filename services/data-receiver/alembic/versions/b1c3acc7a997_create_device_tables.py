@@ -1,8 +1,8 @@
-"""create device tables
+"""Create device tables
 
-Revision ID: b966ef7e6a22
+Revision ID: b1c3acc7a997
 Revises: 
-Create Date: 2026-09-08 17:15:52.333818
+Create Date: 2026-09-12 20:28:57.169429
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'b966ef7e6a22'
+revision: str = 'b1c3acc7a997'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -24,7 +24,8 @@ def upgrade() -> None:
     op.create_table('devices',
     sa.Column('device_id', sa.Text(), nullable=False),
     sa.Column('public_key', sa.LargeBinary(), nullable=False),
-    sa.PrimaryKeyConstraint('device_id')
+    sa.PrimaryKeyConstraint('device_id'),
+    sa.UniqueConstraint('device_id')
     )
     # ### end Alembic commands ###
 
