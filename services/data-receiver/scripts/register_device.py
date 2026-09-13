@@ -24,7 +24,7 @@ def reg_device(name: str, key: str):
         session.add(device)
         session.commit()
 
-        print(f"Succesfully registered {name} into the database. DEBUG: {public_key} ENTERED")
+        print(f"Succesfully registered device '{name}' into the database.")
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
