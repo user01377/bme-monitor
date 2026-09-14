@@ -18,9 +18,9 @@ class SensorReads(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     device: Mapped[str] = mapped_column(String)
 
-    temp: Mapped[float] = mapped_column(Float) # temp is in fahrenheit
+    temp: Mapped[float] = mapped_column(Float)
     humidity: Mapped[float] = mapped_column(Float)
-    pressure: Mapped[float] = mapped_column(Float) # pressure is measured in hPa
+    pressure: Mapped[float] = mapped_column(Float)
 
     status: Mapped[Status] = mapped_column(Enum(Status), default=Status.VALID)
 

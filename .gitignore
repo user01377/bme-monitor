@@ -217,5 +217,7 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
+# Project Stuff
 .DS_Store
-.res-dock
+res-dock
+sqlite.db
