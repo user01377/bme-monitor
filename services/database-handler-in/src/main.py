@@ -51,7 +51,7 @@ async def main():
             json_data["data"]["humidity"] /= 100
             json_data["data"]["pressure"] /= 100
 
-            converted_temp = (json_data["data"]["temperature"] * 9/5) + 32
+            converted_temp = round((json_data["data"]["temperature"] * 9/5) + 32, 2)
 
             with SessionLocal() as session:
                 sensor_read = SensorReads(
