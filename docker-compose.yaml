@@ -34,6 +34,18 @@ services:
     env_file:
       - .env
 
+  data-receiver-migration:
+    build:
+      context: ./services/data-receiver
+      dockerfile: Dockerfile
+    volumes:
+      - receiver_data:/data
+    command: alembic upgrade head
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: sqlite:////data/devices.db
+
   data-receiver:
     build:
       context: ./services/data-receiver
@@ -46,6 +58,10 @@ services:
       - .env
     environment:
       DATABASE_URL: sqlite:////data/devices.db
+    
+    depends_on:
+      data-receiver-migration:
+        condition: service_completed_successfully
   
   database-handler-in:
     build:
