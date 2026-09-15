@@ -16,7 +16,7 @@ config = context.config
 user = os.getenv("POSTGRES_USER")
 password = os.getenv("POSTGRES_PASSWORD")
 
-database_url = f"postgresql+psycopg://{user}:{password}@localhost:5432/bme280"
+database_url = f"postgresql+psycopg://{user}:{password}@db:5432/bme280"
 
 config.set_main_option("sqlalchemy.url", database_url)
 
