@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+    # backend testing implementation
+
+    push-image:
+        name: Build Backend Image
+        if: github.ref == 'refs/heads/main'
+        runs-on: ubuntu-latest
+
+        steps:
+          - name: Checkout Repo
+            uses: actions/checkout@v4
+        
+          - name: GHCR Login
+            uses: docker/login-action@v3
+            with:
+                registry: ghcr.io
+                username: ${{ github.actor }}
+                password: ${{ secrets.GITHUB_TOKEN }}
+    
+          - name: Build Backend Runtime Image
+            run: |
+              docker build \
+                -t ghcr.io/user01377/bme-monitor-backend:${{ github.sha }} \
+                -t ghcr.io/user01377/bme-monitor-backend:prod \
+                backend
+    
+          - name: Push Backend Image
+            run: |
+                docker push ghcr.io/user01377/bme-monitor-backend:${{ github.sha }}
+                docker push ghcr.io/user01377/bme-monitor-backend:prod
