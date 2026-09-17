@@ -31,8 +31,35 @@ jobs:
                 -t ghcr.io/user01377/bme-data-receiver:${{ github.sha }} \
                 -t ghcr.io/user01377/bme-data-receiver:prod \
                 services/data-receiver
+          
+          - name: Build Database Handler In Image
+            run: |
+              docker build \
+                -t ghcr.io/user01377/bme-handler-in:${{ github.sha }} \
+                -t ghcr.io/user01377/bme-handler-in:prod \
+                services/database-handler-in
+
+          - name: Build Database Handler Out Image
+            run: |
+              docker build \
+                -t ghcr.io/user01377/bme-handler-out:${{ github.sha }} \
+                -t ghcr.io/user01377/bme-handler-out:prod \
+                services/database-handler-out
+
+          - name: Build Data Server Image
+            run: |
+              docker build \
+                -t ghcr.io/user01377/bme-data-server:${{ github.sha }} \
+                -t ghcr.io/user01377/bme-data-server:prod \
+                services/data-server
     
-          - name: Push Data Receiver Image
+          - name: Push Images To Registry
             run: |
                 docker push ghcr.io/user01377/bme-data-receiver:${{ github.sha }}
                 docker push ghcr.io/user01377/bme-data-receiver:prod
+                docker push ghcr.io/user01377/bme-handler-in:${{ github.sha }}
+                docker push ghcr.io/user01377/bme-handler-in:prod
+                docker push ghcr.io/user01377/bme-handler-out:${{ github.sha }}
+                docker push ghcr.io/user01377/bme-handler-out:prod
+                docker push ghcr.io/user01377/bme-data-server:${{ github.sha }}
+                docker push ghcr.io/user01377/bme-data-server:prod
