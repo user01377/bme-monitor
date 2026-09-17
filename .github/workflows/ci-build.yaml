@@ -25,14 +25,14 @@ jobs:
                 username: ${{ github.actor }}
                 password: ${{ secrets.GITHUB_TOKEN }}
     
-          - name: Build Backend Runtime Image
+          - name: Build Data Receiver Image
             run: |
               docker build \
-                -t ghcr.io/user01377/bme-monitor-backend:${{ github.sha }} \
-                -t ghcr.io/user01377/bme-monitor-backend:prod \
-                backend
+                -t ghcr.io/user01377/bme-data-receiver:${{ github.sha }} \
+                -t ghcr.io/user01377/bme-data-receiver:prod \
+                services/data-receiver
     
-          - name: Push Backend Image
+          - name: Push Data Receiver Image
             run: |
-                docker push ghcr.io/user01377/bme-monitor-backend:${{ github.sha }}
-                docker push ghcr.io/user01377/bme-monitor-backend:prod
+                docker push ghcr.io/user01377/bme-data-receiver:${{ github.sha }}
+                docker push ghcr.io/user01377/bme-data-receiver:prod
