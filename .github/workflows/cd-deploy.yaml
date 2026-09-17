@@ -1,0 +1,34 @@
+name: CD
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+
+jobs:
+  deploy:
+    if: >
+        github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.head_branch == 'main'
+    name: Deploy to Server
+    runs-on: self-hosted
+
+    steps:
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u user01377 --password-stdin
+
+      - name: Pull Docker Images
+        run: |
+          docker pull ghcr.io/user01377/bme-data-receiver:${{ github.event.workflow_run.head_sha }}
+          docker pull ghcr.io/user01377/bme-handler-in:${{ github.event.workflow_run.head_sha }}
+          docker pull ghcr.io/user01377/bme-handler-out:${{ github.event.workflow_run.head_sha }}
+          docker pull ghcr.io/user01377/bme-data-server:${{ github.event.workflow_run.head_sha }}
+          docker pull ghcr.io/user01377/bme-database-migration:${{ github.event.workflow_run.head_sha }}
+      
+      - name: Restart Containers
+        run: |
+          docker compose down --remove-orphans
+          docker compose up -d
+
+
+        working-directory: /home/macser/bme-monitor
