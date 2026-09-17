@@ -70,3 +70,5 @@ jobs:
                 docker push ghcr.io/user01377/bme-handler-out:prod
                 docker push ghcr.io/user01377/bme-data-server:${{ github.sha }}
                 docker push ghcr.io/user01377/bme-data-server:prod
+                docker push ghcr.io/user01377/bme-database-migration:${{ github.sha }}
+                docker push ghcr.io/user01377/bme-database-migration:prod
