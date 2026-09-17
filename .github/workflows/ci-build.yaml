@@ -52,6 +52,13 @@ jobs:
                 -t ghcr.io/user01377/bme-data-server:${{ github.sha }} \
                 -t ghcr.io/user01377/bme-data-server:prod \
                 services/data-server
+          
+          - name: Build Database Migration Image
+            run: |
+              docker build \
+                -t ghcr.io/user01377/bme-database-migration:${{ github.sha }} \
+                -t ghcr.io/user01377/bme-database-migration:prod \
+                database
     
           - name: Push Images To Registry
             run: |
