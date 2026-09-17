@@ -28,7 +28,6 @@ jobs:
       - name: Restart Containers
         run: |
           docker compose down --remove-orphans
-          docker compose up -d
-
+          SHA=${{ github.event.workflow_run.head_sha }} docker compose up -d
 
         working-directory: /home/macser/bme-monitor
