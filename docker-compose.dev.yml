@@ -1,8 +1,8 @@
 services:
   redis:
     image: redis:8
-    expose:
-      - "6379"
+    ports:
+      - "6379:6379"
     command: redis-server --requirepass ${REDIS_PASSWORD}
 
     healthcheck:
@@ -31,7 +31,8 @@ services:
         start_period: 3s
 
   db-migration:
-    image: "ghcr.io/user01377/bme-database-migration:${SHA:-prod}"
+    build: 
+      context: ./database
     depends_on:
       db:
         condition: service_healthy
@@ -40,7 +41,9 @@ services:
       - .env
 
   data-receiver-migration:
-    image: "ghcr.io/user01377/bme-data-receiver:${SHA:-prod}"
+    build:
+      context: ./services/data-receiver
+      dockerfile: Dockerfile
     volumes:
       - receiver_data:/data
     command: alembic upgrade head
@@ -50,7 +53,9 @@ services:
       DATABASE_URL: sqlite:////data/devices.db
 
   data-receiver:
-    image: "ghcr.io/user01377/bme-data-receiver:${SHA:-prod}"
+    build:
+      context: ./services/data-receiver
+      dockerfile: Dockerfile
     volumes:
       - receiver_data:/data
     ports:
@@ -67,7 +72,11 @@ services:
         condition: service_healthy
   
   database-handler-in:
-    image: "ghcr.io/user01377/bme-handler-in:${SHA:-prod}"
+    build:
+      context: ./services/database-handler-in
+      dockerfile: Dockerfile
+    expose:
+      - "8001"
     env_file:
       - .env
 
@@ -76,9 +85,11 @@ services:
         condition: service_completed_successfully
   
   database-handler-out:
-    image: "ghcr.io/user01377/bme-handler-out:${SHA:-prod}"
-    expose:
-      - "8002"
+    build:
+      context: ./services/database-handler-out
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
     env_file:
       - .env
 
@@ -87,7 +98,9 @@ services:
         condition: service_completed_successfully
 
   data-server-migration:
-    image: "ghcr.io/user01377/bme-data-server:${SHA:-prod}"
+    build:
+      context: ./services/data-server
+      dockerfile: Dockerfile
     volumes:
       - server_data:/data
     command: alembic upgrade head
@@ -97,7 +110,9 @@ services:
       DATABASE_URL: sqlite:////data/data-server.db
   
   data-server:
-    image: "ghcr.io/user01377/bme-data-server:${SHA:-prod}"
+    build:
+      context: ./services/data-server
+      dockerfile: Dockerfile
     volumes:
       - server_data:/data
     ports:
