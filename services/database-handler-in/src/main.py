@@ -75,4 +75,5 @@ async def main():
             logger.exception("Failed to process telemetry payload")
 
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())
