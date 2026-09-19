@@ -30,6 +30,33 @@ with open("logging.yaml") as f:
 
 logger = logging.getLogger(__name__)
 
+def process_payload(json_data, session):
+    """
+    Helper function to process data from REDIS queue.
+    Makes unit testing easier for proccessing data.
+    """
+
+    # scale down data back to original size
+    json_data["data"]["temperature"] /= 100
+    json_data["data"]["humidity"] /= 100
+    json_data["data"]["pressure"] /= 100
+
+    converted_temp = round((json_data["data"]["temperature"] * 9/5) + 32, 2)
+
+    sensor_read = SensorReads(
+        device=json_data["device_id"],
+        temp=converted_temp,
+        humidity=json_data["data"]["humidity"],
+        pressure=json_data["data"]["pressure"],
+        status=Status.VALID,
+        timestamp=datetime.datetime.fromtimestamp(
+            json_data["timestamp"],
+            tz=datetime.timezone.utc,
+        ),
+    )
+
+    session.add(sensor_read)
+    session.commit()
 
 async def main():
     redis = await connect_redis()
@@ -46,28 +73,8 @@ async def main():
             # debugging log
             # logger.info("JSON DATA: %s", json_data)
 
-            # scale down data back to original size
-            json_data["data"]["temperature"] /= 100
-            json_data["data"]["humidity"] /= 100
-            json_data["data"]["pressure"] /= 100
-
-            converted_temp = round((json_data["data"]["temperature"] * 9/5) + 32, 2)
-
             with SessionLocal() as session:
-                sensor_read = SensorReads(
-                    device=json_data["device_id"],
-                    temp=converted_temp,
-                    humidity=json_data["data"]["humidity"],
-                    pressure=json_data["data"]["pressure"],
-                    status=Status.VALID,
-                    timestamp=datetime.datetime.fromtimestamp(
-                        json_data["timestamp"],
-                        tz=datetime.timezone.utc,
-                    ),
-                )
-
-                session.add(sensor_read)
-                session.commit()
+                process_payload(json_data, session)
 
             logger.info("Data successfully written to PostgreSQL for '%s'", json_data["device_id"])
 
