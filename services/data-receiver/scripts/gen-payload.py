@@ -11,9 +11,9 @@ payload = {
     "device_id": "test-device",
     "timestamp": 1757070000,
     "data": {
-        "temperature": 5.0,
-        "humidity": 5.0,
-        "pressure": 5.0
+        "temperature": 5,
+        "humidity": 5,
+        "pressure": 5
     }
 }
 
