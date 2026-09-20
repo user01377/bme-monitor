@@ -6,13 +6,13 @@ All scripts are located in the `scripts/` directory and **must be run from insid
 
 ## Available Scripts
 
-| Script                | Purpose                                             |
-| --------------------- | --------------------------------------------------- |
-| `list_devices`       | Lists all devices that are registered in the database|
-| `register_device`   | Registers a device and its public key               |
-| `unregister_device` | Removes a registered device                         |
-| `seed_test_device`  | Creates a test device for development and debugging |
-| `gen-payload`       | Generates a test HTTP request payload               |
+| Script                | Purpose                                               |
+| --------------------- | ----------------------------------------------------- |
+| `list_devices`      | Lists all devices that are registered in the database |
+| `register_device`   | Registers a device and its public key                 |
+| `unregister_device` | Removes a registered device                           |
+| `seed_test_device`  | Creates a test device for development and debugging   |
+| `gen-payload`       | Generates a test HTTP request payload                 |
 
 ---
 
@@ -76,45 +76,6 @@ python -m scripts.unregister_device esp32-01
 ```
 
 Unregistering a device removes its registration from the database. The device will no longer be able to authenticate with the `data-receiver` service.
-
----
-
-## Seeding a Test Device
-
-The `seed_test_device` script is intended **only for debugging and development**.
-
-It creates a test device in the SQLite database and generates a corresponding key pair.
-
-The script prints:
-
-* Device name
-* Private key
-* Public key
-
-Run the script from inside the `data-receiver` container.
-
-```bash
-python -m scripts.seed_test_device
-```
-
-The private key printed by this script should be treated as sensitive test data and should not be used as a production device key.
-
-The generated private key can be used with the `gen-payload` script to generate authenticated test requests.
-
----
-
-## Generating a Test Payload
-
-The `gen-payload` script is intended **only for debugging and development**.
-
-It generates an HTTP request that can be used for testing the `data-receiver` API through either:
-
-* `curl`
-* FastAPI Swagger UI
-
-The script relies on a device created by `seed_test_device`.
-
-**You do NOT need to run this script inside of the container.**
 
 ### Setup
 
