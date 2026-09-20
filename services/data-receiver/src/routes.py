@@ -16,23 +16,50 @@ router = APIRouter()
 def get_health():
     return {"status": "ok"}
 
+
+def decode_signature(payload_signature) -> bytes:
+    """
+    Helper function to decode the received payload signature, str -> bytes
+    """
+    try:
+        signature = base64.b64decode(payload_signature)
+        return signature
+    except ValueError:
+        raise HTTPException(status_code=401, detail="Authentication failed.")
+
+def create_signature(device_id, timestamp, data) -> bytes:
+    """
+    Helper function to create the cryptography signature
+    signature = device_id + timestamp + json_data
+    """
+
+    data_json = json.dumps(data.model_dump(), separators=(",", ":"), sort_keys=True)
+
+    return device_id.encode("utf-8") + timestamp.to_bytes(8, "big") + data_json.encode("utf-8")
+
+def verify_signature(public_key, signature, message) -> bool:
+    """
+    Helper function for authenticating via cryptography handshake
+    """
+
+    try:
+        public_key.verify(signature, message)
+        return True
+    except (InvalidSignature, ValueError):
+        return False
+
 @router.post("/queue-data", response_model=ReceiverResponse)
 async def queue_data(payload: ReceiverIn, redis = Depends(get_redis)):
     device = get_device(payload.device_id)
 
     if not device:
         raise HTTPException(status_code=401, detail="Authentication failed.")
-    
-    # device authentication logic, for cryptography handshake
-    data_json = json.dumps(payload.data.model_dump(), separators=(",", ":"), sort_keys=True)
+
     public_key = Ed25519PublicKey.from_public_bytes(device.public_key)
-    message = (payload.device_id.encode("utf-8") + payload.timestamp.to_bytes(8, "big") + data_json.encode("utf-8"))
+    signature = decode_signature(payload.signature)
+    message = create_signature(payload.device_id, payload.timestamp, payload.data)
 
-    try:
-        signature = base64.b64decode(payload.signature)
-        public_key.verify(signature, message)
-
-    except (InvalidSignature, ValueError):
+    if not verify_signature(public_key, signature, message):
         raise HTTPException(status_code=401, detail="Authentication failed.")
 
     # push to redis queue
