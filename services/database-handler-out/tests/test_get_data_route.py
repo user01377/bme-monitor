@@ -5,24 +5,7 @@ from src.models import SensorReads, Status
 
 client = TestClient(app)
 
-def test_get_average_data(db_session):
-    db_session.add_all([
-        SensorReads(
-            device="test-device",
-            temp=20,
-            humidity=40,
-            pressure=1000,
-            status=Status.VALID,
-        ),
-        SensorReads(
-            device="test-device",
-            temp=30,
-            humidity=60,
-            pressure=1020,
-            status=Status.VALID,
-        ),
-    ])
-    db_session.commit()
+def test_get_average_data(seeded_db):
 
     response = client.get("telemetry/average/")
 
