@@ -27,7 +27,7 @@ def decode_signature(payload_signature) -> bytes:
     except ValueError:
         raise HTTPException(status_code=401, detail="Authentication failed.")
 
-def create_signature(device_id, timestamp, data) -> bytes:
+def create_message(device_id, timestamp, data) -> bytes:
     """
     Helper function to create the cryptography signature
     signature = device_id + timestamp + json_data
@@ -57,7 +57,7 @@ async def queue_data(payload: ReceiverIn, redis = Depends(get_redis)):
 
     public_key = Ed25519PublicKey.from_public_bytes(device.public_key)
     signature = decode_signature(payload.signature)
-    message = create_signature(payload.device_id, payload.timestamp, payload.data)
+    message = create_message(payload.device_id, payload.timestamp, payload.data)
 
     if not verify_signature(public_key, signature, message):
         raise HTTPException(status_code=401, detail="Authentication failed.")
