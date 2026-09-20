@@ -7,10 +7,50 @@ on:
   pull_request:
 
 jobs:
-    # backend testing implementation
+    testing:
+      name: Test Images
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Checkout Repo
+          uses: actions/checkout@v4
+
+        - name: Build Receiver Image
+          run: docker build --target test -t bme-data-receiver:test services/data-receiver
+        
+        - name: Build Server Image
+          run: docker build --target test -t bme-data-server:test services/data-server
+
+        - name: Build Handler In Image
+          run: docker build --target test -t bme-handler-in:test services/database-handler-in
+
+        - name: Build Handler Out Image
+          run: docker build --target test -t bme-handler-out:test services/database-handler-out
+        
+        - name: Run Receiver Tests
+          run: |
+            docker run --rm \
+              -e DATABASE_URL="sqlite:///./test.db" \
+              bme-data-receiver:test
+
+        - name: Run Server Tests
+          run: |
+            docker run --rm \
+              -e DATABASE_URL="sqlite:///./test.db" \
+              bme-data-server:test
+
+        - name: Run Handler In Tests
+          run: |
+            docker run --rm \
+              bme-handler-in:test 
+
+        - name: Run Handler Out Tests
+          run: |
+            docker run --rm \
+              bme-handler-out:test
 
     push-image:
-        name: Build Backend Image
+        name: Build & Push Images
         if: github.ref == 'refs/heads/main'
         runs-on: ubuntu-latest
 

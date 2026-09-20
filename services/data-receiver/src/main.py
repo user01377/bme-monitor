@@ -13,6 +13,10 @@ async def lifespan(app: FastAPI):
 
     await redis.aclose()
 
-app = FastAPI(lifespan=lifespan)
+def create_app():
+    app = FastAPI(lifespan=lifespan)
+    app.include_router(router)
 
-app.include_router(router)
+    return app
+
+app = create_app()

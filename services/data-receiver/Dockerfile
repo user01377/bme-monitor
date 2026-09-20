@@ -1,4 +1,4 @@
-FROM python:3.14-slim
+FROM python:3.14-slim AS base
 
 WORKDIR /app
 
@@ -15,5 +15,15 @@ COPY alembic.ini .
 COPY scripts/ ./scripts/
 
 RUN pip install --no-cache-dir .
+
+FROM base AS test
+
+RUN pip install --no-cache-dir ".[test]"
+
+COPY tests/ ./tests
+
+CMD ["pytest", "-q", "--strict-markers"]
+
+FROM base AS production
 
 CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--log-config", "logging.yaml"]
