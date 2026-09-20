@@ -224,3 +224,4 @@ sqlite.db
 
 seed_test_device.py
 gen-payload.py
+seed-test.py
