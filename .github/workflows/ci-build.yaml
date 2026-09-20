@@ -51,6 +51,7 @@ jobs:
 
     push-image:
         name: Build & Push Images
+        needs: [testing]
         if: github.ref == 'refs/heads/main'
         runs-on: ubuntu-latest
 
