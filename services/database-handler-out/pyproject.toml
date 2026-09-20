@@ -14,3 +14,9 @@ dependencies=[
     "pydantic",
     "psycopg[binary]"
 ]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "httpx2"
+]
