@@ -1,4 +1,4 @@
-FROM python:3.14-slim
+FROM python:3.14-slim AS base
 
 WORKDIR /app
 
@@ -11,3 +11,13 @@ COPY src/ ./src/
 RUN pip install --no-cache-dir .
 
 CMD ["python", "-m" ,"src.main"]
+
+FROM base AS test
+
+RUN pip install ".[test]"
+
+RUN pip install --no-cache-dir ".[test]"
+
+COPY tests/ ./tests
+
+CMD ["pytest", "-q", "--strict-markers"]
