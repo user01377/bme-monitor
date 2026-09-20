@@ -37,17 +37,17 @@ def process_payload(json_data, session):
     """
 
     # scale down data back to original size
-    json_data["data"]["temperature"] /= 100
-    json_data["data"]["humidity"] /= 100
-    json_data["data"]["pressure"] /= 100
+    temperature = json_data["data"]["temperature"] / 100
+    humidity = json_data["data"]["humidity"] / 100
+    pressure = json_data["data"]["pressure"] / 100
 
-    converted_temp = round((json_data["data"]["temperature"] * 9/5) + 32, 2)
+    converted_temp = round((temperature * 9/5) + 32, 2)
 
     sensor_read = SensorReads(
         device=json_data["device_id"],
         temp=converted_temp,
-        humidity=json_data["data"]["humidity"],
-        pressure=json_data["data"]["pressure"],
+        humidity=humidity,
+        pressure=pressure,
         status=Status.VALID,
         timestamp=datetime.datetime.fromtimestamp(
             json_data["timestamp"],
