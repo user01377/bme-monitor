@@ -16,44 +16,40 @@ jobs:
           uses: actions/checkout@v4
 
         - name: Build Receiver Image
-          run: docker build -t bme-data-receiver:test \
-            services/data-receiver
+          run: docker build -t bme-data-receiver:test services/data-receiver
         
         - name: Build Server Image
-          run: docker build -t bme-data-server:test \
-            services/data-server
+          run: docker build -t bme-data-server:test services/data-server
 
         - name: Build Handler In Image
-          run: docker build -t bme-handler-in:test \
-            services/database-handler-in
+          run: docker build -t bme-handler-in:test services/database-handler-in
 
         - name: Build Handler Out Image
-          run: docker build -t bme-handler-out:test \
-            services/database-handler-out
+          run: docker build -t bme-handler-out:test services/database-handler-out
         
         - name: Run Receiver Tests
           run: |
             docker run --rm \
-            bme-data-receiver:test \
-            pytest -q --strict-markers
+              bme-data-receiver:test \
+              pytest -q --strict-markers
 
         - name: Run Server Tests
           run: |
             docker run --rm \
-            bme-data-server:test \
-            pytest -q --strict-markers
+              bme-data-server:test \
+              pytest -q --strict-markers
 
         - name: Run Handler In Tests
           run: |
             docker run --rm \
-            bme-handler-in:test \
-            pytest -q --strict-markers
+              bme-handler-in:test \
+              pytest -q --strict-markers
 
         - name: Run Handler Out Tests
           run: |
             docker run --rm \
-            bme-handler-out:test \
-            pytest -q --strict-markers
+              bme-handler-out:test \
+              pytest -q --strict-markers
 
     push-image:
         name: Build & Push Images
