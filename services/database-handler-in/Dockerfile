@@ -10,8 +10,6 @@ COPY src/ ./src/
 
 RUN pip install --no-cache-dir .
 
-CMD ["python", "-m" ,"src.main"]
-
 FROM base AS test
 
 RUN pip install ".[test]"
@@ -21,3 +19,7 @@ RUN pip install --no-cache-dir ".[test]"
 COPY tests/ ./tests
 
 CMD ["pytest", "-q", "--strict-markers"]
+
+FROM base AS production
+
+CMD ["python", "-m" ,"src.main"]

@@ -16,8 +16,6 @@ COPY scripts/ ./scripts/
 
 RUN pip install --no-cache-dir .
 
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--log-config", "logging.yaml"]
-
 FROM base AS test
 
 RUN pip install --no-cache-dir ".[test]"
@@ -25,3 +23,7 @@ RUN pip install --no-cache-dir ".[test]"
 COPY tests/ ./tests
 
 CMD ["pytest", "-q", "--strict-markers"]
+
+FROM base AS production
+
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--log-config", "logging.yaml"]
