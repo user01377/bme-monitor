@@ -221,3 +221,6 @@ __marimo__/
 .DS_Store
 res-dock
 sqlite.db
+
+seed_test_device.py
+gen-payload.py
