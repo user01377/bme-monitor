@@ -25,6 +25,13 @@ jobs:
           docker pull ghcr.io/user01377/bme-data-server:${{ github.event.workflow_run.head_sha }}
           docker pull ghcr.io/user01377/bme-database-migration:${{ github.event.workflow_run.head_sha }}
       
+      - name: Update Repository
+        run: |
+          git fetch origin
+          git reset --hard origin/main
+          
+        working-directory: /home/macser/bme-monitor
+      
       - name: Restart Containers
         run: |
           docker compose down --remove-orphans
