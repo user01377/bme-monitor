@@ -23,6 +23,7 @@ void loop() {
 #include <signing.h>
 #include <device_storage.h>
 #include <secrets.h>
+#include <ArduinoJson.h>
 
 Adafruit_BME280 bme;
 
@@ -50,6 +51,18 @@ bool syncTime() {
     return true;
 }
 
+void connectWifi() {
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+    }
+
+    while (!syncTime()) {
+        delay(1000);
+    }
+}
+
 void setup() {
     Serial.begin(115200);
 
@@ -71,55 +84,84 @@ void setup() {
         }
     }
 
-    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-
-
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-    }
-
-    while (!syncTime()) {
-        delay(1000);
-    }
+    connectWifi();
 }
 
 void loop() {
+    if (WiFi.status() != WL_CONNECTED) {
+        WiFi.reconnect();
+        delay(1000);
+        syncTime();
+        return;
+    }
+
+    // TELEMETRY DATA
     int32_t scaledTemp = round(bme.readTemperature() * 100);
     int32_t scaledHumidity = round(bme.readHumidity() * 100);
     int32_t scaledPressure = round((bme.readPressure() / 100.0F) * 100);
-    int64_t timestamp = time(nullptr);
 
-    String signData =
-        "{\"humidity\":" + String(scaledHumidity) +
-        ",\"pressure\":" + String(scaledPressure) +
-        ",\"temperature\":" + String(scaledTemp) +
-        "}";
-
-    // debug statement for visualizing data
-    // Serial.println(signData);
-
-    String deviceId = getDeviceId();
-    String signature = signTelemetry(deviceId, timestamp, signData);
+    // String signData =
+    //     "{\"humidity\":" + String(scaledHumidity) +
+    //     ",\"pressure\":" + String(scaledPressure) +
+    //     ",\"temperature\":" + String(scaledTemp) +
+    //     "}";
 
     if (WiFi.status() == WL_CONNECTED) {
-
         HTTPClient http;
 
         http.begin(API_URL);
         http.addHeader("Content-Type", "application/json");
 
-        String data_json = "{";
-        data_json += "\"device_id\":\"" + deviceId + "\",";
-        data_json += "\"timestamp\":" + String(timestamp) + ",";
-        data_json += "\"data\":{";
-        data_json += "\"temperature\":" + String(scaledTemp) + ",";
-        data_json += "\"humidity\":" + String(scaledHumidity) + ",";
-        data_json += "\"pressure\":" + String(scaledPressure);
-        data_json += "},";
-        data_json += "\"signature\":\"";
-        data_json += signature;
-        data_json += "\"";
-        data_json += "}";
+        // String data_json = "{";
+        // data_json += "\"device_id\":\"" + deviceId + "\",";
+        // data_json += "\"timestamp\":" + String(timestamp) + ",";
+        // data_json += "\"data\":{";
+        // data_json += "\"temperature\":" + String(scaledTemp) + ",";
+        // data_json += "\"humidity\":" + String(scaledHumidity) + ",";
+        // data_json += "\"pressure\":" + String(scaledPressure);
+        // data_json += "},";
+        // data_json += "\"signature\":\"";
+        // data_json += signature;
+        // data_json += "\"";
+        // data_json += "}";
+
+        JsonDocument jsondoc;
+
+        String deviceId = getDeviceId();
+        int64_t timestamp = time(nullptr);
+
+        // ADD AUTH DATA
+        jsondoc["device_id"] = deviceId;
+        jsondoc["timestamp"] = timestamp;
+
+        // ADD TELEMETRY DATA
+        JsonObject dataJsonObject = jsondoc["data"].to<JsonObject>();
+        dataJsonObject["temperature"] = scaledTemp;
+        dataJsonObject["humidity"] = scaledHumidity;
+        dataJsonObject["pressure"] = scaledPressure;
+
+        // SERALIZE TELEMETRY DATA TO CREATE SIGNATURE
+        String dataJson;
+        serializeJson(dataJsonObject, dataJson);
+        String signature = signTelemetry(deviceId, timestamp, dataJson);
+
+        // ADD SIGNATURE
+        jsondoc["signature"] = signature;
+
+        int16_t rssi = WiFi.RSSI();
+        uint32_t uptime = millis() / 1000; // how long and will it fail?
+
+        JsonObject diagnosticJsonObject = jsondoc["diagnostics"].to<JsonObject>();
+        diagnosticJsonObject["rssi"] = rssi;
+        diagnosticJsonObject["uptime"] = uptime;
+        diagnosticJsonObject["reset"] = "n/a";
+
+        // SERIALIZE JSONDOC TO DATA_JSON VARIABLE
+        String data_json;
+        serializeJson(jsondoc, data_json);
+
+        // debug statement for visualizing data & signature
+        // Serial.println(data_json);
 
         int response_code = http.POST(data_json);
 
@@ -134,6 +176,8 @@ void loop() {
         }
 
         http.end();
+    } else {
+        return;
     }
 
     // Serial.println(scaledTemp);
@@ -141,7 +185,7 @@ void loop() {
     // Serial.println(scaledPressure);
     // Serial.println(WiFi.localIP());
 
-    delay(POLL_INTERVAL_MS);
+    delay(5000);
 }
 
 #endif

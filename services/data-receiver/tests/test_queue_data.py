@@ -40,6 +40,11 @@ def test_queue_data_success(client, db_session, test_device, redis_mock, mocker)
             "pressure": 5,
         },
         "signature": encoded_signature,
+        "diagnostics": {
+            "rssi": -42,
+            "uptime": 300,
+            "reset": "n/a"
+        }
     }
 
     response = client.post("/queue-data", json=payload)    
@@ -85,6 +90,11 @@ def test_invalid_signature_data(client, db_session, redis_mock, test_device, moc
             "pressure": 12321,
         },
         "signature": encoded_signature,
+                "diagnostics": {
+            "rssi": -42,
+            "uptime": 300,
+            "reset": "n/a"
+        }
     }
 
     response = client.post("/queue-data", json=payload)    
