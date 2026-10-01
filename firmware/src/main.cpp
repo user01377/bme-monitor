@@ -91,17 +91,30 @@ void loop() {
     // RETRY CONNECTON TO WIFI IF CONNECTION IS LOST
     if (WiFi.status() != WL_CONNECTED) {
         WiFi.reconnect();
-        delay(1000);
-        syncTime();
+
+        int attempts = 0;
+
+        while (WiFi.status() != WL_CONNECTED && attempts < 20) {
+            delay(500);
+            attempts++;
+        }
+        
+        // if wifi connects, resync time so epoch timestamp is correct
+        if (WiFi.status() == WL_CONNECTED) {
+            while (!syncTime()) {
+                delay(1000);
+            }
+        }
+
         return;
     }
 
-    // TELEMETRY DATA
-    int32_t scaledTemp = round(bme.readTemperature() * 100);
-    int32_t scaledHumidity = round(bme.readHumidity() * 100);
-    int32_t scaledPressure = round((bme.readPressure() / 100.0F) * 100);
-
     if (WiFi.status() == WL_CONNECTED) {
+        // TELEMETRY DATA
+        int32_t scaledTemp = round(bme.readTemperature() * 100);
+        int32_t scaledHumidity = round(bme.readHumidity() * 100);
+        int32_t scaledPressure = round((bme.readPressure() / 100.0F) * 100);
+
         HTTPClient http;
 
         http.begin(API_URL);
