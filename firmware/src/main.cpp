@@ -136,9 +136,9 @@ void loop() {
 
         // ADD TELEMETRY DATA
         JsonObject dataJsonObject = jsondoc["data"].to<JsonObject>();
-        dataJsonObject["temperature"] = scaledTemp;
         dataJsonObject["humidity"] = scaledHumidity;
         dataJsonObject["pressure"] = scaledPressure;
+        dataJsonObject["temperature"] = scaledTemp;
 
         // SERALIZE TELEMETRY DATA TO CREATE SIGNATURE
         String dataJson;
