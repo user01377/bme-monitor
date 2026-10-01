@@ -13,7 +13,7 @@ services:
 
   db:
       image: postgres:16
-      restart: always
+      restart: unless-stopped
       environment:
         POSTGRES_DB: ${POSTGRES_DB}
         POSTGRES_USER: ${POSTGRES_USER}
@@ -51,6 +51,7 @@ services:
 
   data-receiver:
     image: "ghcr.io/user01377/bme-data-receiver:${SHA:-prod}"
+    restart: unless-stopped
     volumes:
       - receiver_data:/data
     ports:
@@ -68,6 +69,7 @@ services:
   
   database-handler-in:
     image: "ghcr.io/user01377/bme-handler-in:${SHA:-prod}"
+    restart: unless-stopped
     env_file:
       - .env
 
@@ -77,6 +79,7 @@ services:
   
   database-handler-out:
     image: "ghcr.io/user01377/bme-handler-out:${SHA:-prod}"
+    restart: unless-stopped
     expose:
       - "8002"
     env_file:
@@ -98,6 +101,7 @@ services:
   
   data-server:
     image: "ghcr.io/user01377/bme-data-server:${SHA:-prod}"
+    restart: unless-stopped
     volumes:
       - server_data:/data
     ports:
