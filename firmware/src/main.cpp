@@ -115,14 +115,16 @@ void loop() {
         int32_t scaledHumidity = round(bme.readHumidity() * 100);
         int32_t scaledPressure = round((bme.readPressure() / 100.0F) * 100);
 
+        String deviceId = getDeviceId();
+
         HTTPClient http;
 
         http.begin(API_URL);
         http.addHeader("Content-Type", "application/json");
-
+        http.setUserAgent("ESP32-" + deviceId);
+    
         JsonDocument jsondoc;
 
-        String deviceId = getDeviceId();
         int64_t timestamp = time(nullptr);
 
         // ADD AUTH DATA
