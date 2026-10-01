@@ -23,6 +23,7 @@ void loop() {
 #include <signing.h>
 #include <device_storage.h>
 #include <secrets.h>
+#include <ArduinoJson.h>
 
 Adafruit_BME280 bme;
 
@@ -50,6 +51,18 @@ bool syncTime() {
     return true;
 }
 
+void connectWifi() {
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+    }
+
+    while (!syncTime()) {
+        delay(1000);
+    }
+}
+
 void setup() {
     Serial.begin(115200);
 
@@ -71,19 +84,16 @@ void setup() {
         }
     }
 
-    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-
-
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-    }
-
-    while (!syncTime()) {
-        delay(1000);
-    }
+    connectWifi();
 }
 
 void loop() {
+    if (WiFi.status() != WL_CONNECTED) {
+        WiFi.reconnect();
+        delay(1000);
+        return;
+    }
+
     int32_t scaledTemp = round(bme.readTemperature() * 100);
     int32_t scaledHumidity = round(bme.readHumidity() * 100);
     int32_t scaledPressure = round((bme.readPressure() / 100.0F) * 100);
