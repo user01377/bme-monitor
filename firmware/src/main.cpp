@@ -92,17 +92,21 @@ void loop() {
     if (WiFi.status() != WL_CONNECTED) {
         WiFi.reconnect();
 
-        int attempts = 0;
+        int wifi_attempts = 0;
 
-        while (WiFi.status() != WL_CONNECTED && attempts < 20) {
+        while (WiFi.status() != WL_CONNECTED && wifi_attempts < 10) {
             delay(500);
-            attempts++;
+            wifi_attempts++;
         }
         
         // if wifi connects, resync time so epoch timestamp is correct
+        int synctime_attemps = 0;
+
         if (WiFi.status() == WL_CONNECTED) {
-            while (!syncTime()) {
+            while (!syncTime() && synctime_attemps < 10) {
                 delay(1000);
+
+                synctime_attemps++;
             }
         }
 
