@@ -87,7 +87,7 @@ The service is **not responsible for**:
 
 The service exposes a single API route for receiving telemetry data.
 
-### `POST /queue-data`
+### `POST /telemetry`
 
 This route is the entry point for telemetry data sent by ESP32 nodes.
 

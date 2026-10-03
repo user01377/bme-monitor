@@ -48,7 +48,7 @@ def verify_signature(public_key, signature, message) -> bool:
     except (InvalidSignature, ValueError):
         return False
 
-@router.post("/queue-data", response_model=ReceiverResponse)
+@router.post("/telemetry", response_model=ReceiverResponse)
 async def queue_data(payload: ReceiverIn, redis = Depends(get_redis)):
     device = get_device(payload.device_id)
 
