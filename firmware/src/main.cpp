@@ -29,6 +29,7 @@ Adafruit_BME280 bme;
 
 const unsigned long POLL_INTERVAL_MINUTES = 10;
 const unsigned long POLL_INTERVAL_MS = POLL_INTERVAL_MINUTES * 60UL * 1000UL;
+String resetReason;
 
 bool syncTime() {
     configTime(0, 0, NTP_SERVER);
@@ -63,6 +64,41 @@ void connectWifi() {
     }
 }
 
+String getResetReason() {
+    // simplifies the reset reason from what esp_reset_reason returns
+    
+    switch (esp_reset_reason()) {
+        case ESP_RST_POWERON:
+            return "power_on";
+
+        case ESP_RST_PANIC:
+            return "panic";
+
+        case ESP_RST_INT_WDT:
+        case ESP_RST_TASK_WDT:
+        case ESP_RST_WDT:
+            return "watchdog";
+
+        case ESP_RST_BROWNOUT:
+            return "brownout";
+
+        case ESP_RST_SW:
+            return "software";
+
+        case ESP_RST_EXT:
+            return "external";
+
+        case ESP_RST_DEEPSLEEP:
+            return "deep_sleep";
+
+        case ESP_RST_SDIO:
+            return "sdio";
+
+        default:
+            return "unknown";
+    }
+}
+
 void setup() {
     Serial.begin(115200);
 
@@ -85,6 +121,8 @@ void setup() {
     }
 
     connectWifi();
+
+    resetReason = getResetReason();
 }
 
 void loop() {
@@ -147,7 +185,7 @@ void loop() {
         JsonObject diagnosticJsonObject = jsondoc["diagnostics"].to<JsonObject>();
         diagnosticJsonObject["rssi"] = rssi;
         diagnosticJsonObject["uptime"] = uptime;
-        diagnosticJsonObject["reset"] = "n/a";
+        diagnosticJsonObject["reset"] = resetReason;
 
         // SERIALIZE JSONDOC TO DATA_JSON VARIABLE
         String data_json;
