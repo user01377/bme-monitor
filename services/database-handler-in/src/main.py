@@ -10,7 +10,7 @@ import yaml
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from .models import SensorReads, Status
+from .models import SensorReads, DiagnosticData, Status
 from .redis_client import connect_redis
 
 user = os.getenv("POSTGRES_USER")
@@ -41,21 +41,35 @@ def process_payload(json_data, session):
     humidity = json_data["data"]["humidity"] / 100
     pressure = json_data["data"]["pressure"] / 100
 
+    # convert temp from fahrenheit to celcius
     converted_temp = round((temperature * 9/5) + 32, 2)
 
+
+    device = json_data["device_id"]
+    timestamp = datetime.datetime.fromtimestamp(
+            json_data["timestamp"],
+            tz=datetime.timezone.utc,
+        )
+
+    # create sensor reading object
     sensor_read = SensorReads(
-        device=json_data["device_id"],
+        device=device,
         temp=converted_temp,
         humidity=humidity,
         pressure=pressure,
         status=Status.VALID,
-        timestamp=datetime.datetime.fromtimestamp(
-            json_data["timestamp"],
-            tz=datetime.timezone.utc,
-        ),
+        timestamp=timestamp
+    )
+
+    diag_data = DiagnosticData(
+        device=device,
+        rssi=json_data["diagnostics"]["rssi"],
+        uptime=json_data["diagnostics"]["uptime"],
+        reset=json_data["diagnostics"]["reset"],
     )
 
     session.add(sensor_read)
+    session.add(diag_data)
     session.commit()
 
 async def main():

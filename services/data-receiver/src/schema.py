@@ -6,7 +6,7 @@ class SensorData(BaseModel):
     humidity: int
     pressure: int
 
-class DiagnosticData(BaseModel):
+class DiagnosticDataIn(BaseModel):
     # diagnostic data from node
     rssi: int
     uptime: int
@@ -17,7 +17,7 @@ class ReceiverIn(BaseModel):
     timestamp: int # unix time stamp
     data: SensorData
     signature: str
-    diagnostics: DiagnosticData
+    diagnostics: DiagnosticDataIn
 
 class ReceiverResponse(BaseModel):
     status: str
