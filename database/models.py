@@ -1,6 +1,6 @@
 import datetime
 import enum
-from sqlalchemy import DateTime, func, Float, Enum, String
+from sqlalchemy import DateTime, func, Float, Enum, String, Integer
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 class Status(str, enum.Enum):
@@ -23,6 +23,21 @@ class SensorReads(Base):
     pressure: Mapped[float] = mapped_column(Float) # pressure is measured in hPa
 
     status: Mapped[Status] = mapped_column(Enum(Status), default=Status.VALID)
+
+    timestamp: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), 
+        server_default=func.now()
+    )
+
+class DiagnosticData(Base):
+    __tablename__ = "diagnostic_data"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    device: Mapped[str] = mapped_column(String)
+
+    rssi: Mapped[int] = mapped_column(Integer)
+    uptime: Mapped[int] = mapped_column(Integer)
+    reset: Mapped[str] = mapped_column(String)
 
     timestamp: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), 
