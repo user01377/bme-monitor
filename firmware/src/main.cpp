@@ -88,46 +88,39 @@ void setup() {
 }
 
 void loop() {
+    // RETRY CONNECTON TO WIFI IF CONNECTION IS LOST
     if (WiFi.status() != WL_CONNECTED) {
         WiFi.reconnect();
-        delay(1000);
+
+        int wifi_attempts = 0;
+
+        while (WiFi.status() != WL_CONNECTED && wifi_attempts < 10) {
+            delay(500);
+            wifi_attempts++;
+        }
+
+        // SYNC TIME WITH NTP SERVER
         syncTime();
+
         return;
     }
 
-    // TELEMETRY DATA
-    int32_t scaledTemp = round(bme.readTemperature() * 100);
-    int32_t scaledHumidity = round(bme.readHumidity() * 100);
-    int32_t scaledPressure = round((bme.readPressure() / 100.0F) * 100);
-
-    // String signData =
-    //     "{\"humidity\":" + String(scaledHumidity) +
-    //     ",\"pressure\":" + String(scaledPressure) +
-    //     ",\"temperature\":" + String(scaledTemp) +
-    //     "}";
-
     if (WiFi.status() == WL_CONNECTED) {
+        // TELEMETRY DATA
+        int32_t scaledTemp = round(bme.readTemperature() * 100);
+        int32_t scaledHumidity = round(bme.readHumidity() * 100);
+        int32_t scaledPressure = round((bme.readPressure() / 100.0F) * 100);
+
+        String deviceId = getDeviceId();
+
         HTTPClient http;
 
         http.begin(API_URL);
         http.addHeader("Content-Type", "application/json");
-
-        // String data_json = "{";
-        // data_json += "\"device_id\":\"" + deviceId + "\",";
-        // data_json += "\"timestamp\":" + String(timestamp) + ",";
-        // data_json += "\"data\":{";
-        // data_json += "\"temperature\":" + String(scaledTemp) + ",";
-        // data_json += "\"humidity\":" + String(scaledHumidity) + ",";
-        // data_json += "\"pressure\":" + String(scaledPressure);
-        // data_json += "},";
-        // data_json += "\"signature\":\"";
-        // data_json += signature;
-        // data_json += "\"";
-        // data_json += "}";
-
+        http.setUserAgent("ESP32-" + deviceId);
+    
         JsonDocument jsondoc;
 
-        String deviceId = getDeviceId();
         int64_t timestamp = time(nullptr);
 
         // ADD AUTH DATA
@@ -136,9 +129,9 @@ void loop() {
 
         // ADD TELEMETRY DATA
         JsonObject dataJsonObject = jsondoc["data"].to<JsonObject>();
-        dataJsonObject["temperature"] = scaledTemp;
         dataJsonObject["humidity"] = scaledHumidity;
         dataJsonObject["pressure"] = scaledPressure;
+        dataJsonObject["temperature"] = scaledTemp;
 
         // SERALIZE TELEMETRY DATA TO CREATE SIGNATURE
         String dataJson;
@@ -149,7 +142,7 @@ void loop() {
         jsondoc["signature"] = signature;
 
         int16_t rssi = WiFi.RSSI();
-        uint32_t uptime = millis() / 1000; // how long and will it fail?
+        uint32_t uptime = millis() / 1000; // if node persists for more than 49.7 days, uptime will reset
 
         JsonObject diagnosticJsonObject = jsondoc["diagnostics"].to<JsonObject>();
         diagnosticJsonObject["rssi"] = rssi;
@@ -160,12 +153,12 @@ void loop() {
         String data_json;
         serializeJson(jsondoc, data_json);
 
-        // debug statement for visualizing data & signature
+        // DEBUG STATEMENT FOR DATA_JSON
         // Serial.println(data_json);
 
         int response_code = http.POST(data_json);
 
-        // debugging for http response
+        // DEBUG FOR HTTP RESPONSE
         // Serial.print("HTTP response: ");
         // Serial.println(response_code);
 
@@ -180,12 +173,7 @@ void loop() {
         return;
     }
 
-    // Serial.println(scaledTemp);
-    // Serial.println(scaledHumidity);
-    // Serial.println(scaledPressure);
-    // Serial.println(WiFi.localIP());
-
-    delay(5000);
+    delay(POLL_INTERVAL_MS);
 }
 
 #endif
