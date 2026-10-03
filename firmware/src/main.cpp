@@ -98,17 +98,9 @@ void loop() {
             delay(500);
             wifi_attempts++;
         }
-        
-        // if wifi connects, resync time so epoch timestamp is correct
-        int synctime_attemps = 0;
 
-        if (WiFi.status() == WL_CONNECTED) {
-            while (!syncTime() && synctime_attemps < 10) {
-                delay(1000);
-
-                synctime_attemps++;
-            }
-        }
+        // SYNC TIME WITH NTP SERVER
+        syncTime();
 
         return;
     }
