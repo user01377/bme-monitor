@@ -31,7 +31,8 @@ def authenticate_user(token: str = Depends(api_key), db: Session = Depends(get_d
 
 router = APIRouter(dependencies=[Depends(authenticate_user)])
 
-@router.get("/get-average", response_model=AvgDataOut)
+# will convert this route to handle query params
+@router.get("/average", response_model=AvgDataOut)
 async def get_average_telemetry(request: Request):
     client = request.app.state.http_client
 
