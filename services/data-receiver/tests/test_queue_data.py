@@ -47,7 +47,7 @@ def test_queue_data_success(client, db_session, test_device, redis_mock, mocker)
         }
     }
 
-    response = client.post("/queue-data", json=payload)    
+    response = client.post("/telemetry", json=payload)    
 
     assert response.status_code == 200
     assert response.json() == {"status": "queued"}
@@ -97,7 +97,7 @@ def test_invalid_signature_data(client, db_session, redis_mock, test_device, moc
         }
     }
 
-    response = client.post("/queue-data", json=payload)    
+    response = client.post("/telemetry", json=payload)    
 
     assert response.status_code == 401
     assert response.json() == {"detail": "Authentication failed."}
