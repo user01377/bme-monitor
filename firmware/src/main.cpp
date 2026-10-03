@@ -155,7 +155,7 @@ void loop() {
 
         http.begin(API_URL);
         http.addHeader("Content-Type", "application/json");
-        http.setUserAgent("ESP32-" + deviceId);
+        http.setUserAgent("ESP32-(" + deviceId + ")");
     
         JsonDocument jsondoc;
 
