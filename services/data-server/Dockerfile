@@ -26,6 +26,6 @@ COPY tests/ ./tests
 
 CMD ["pytest", "-q", "--strict-markers"]
 
-FROM base as production
+FROM base AS production
 
 CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8003", "--log-config", "logging.yaml"]
