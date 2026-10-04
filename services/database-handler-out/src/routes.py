@@ -1,3 +1,4 @@
+import logging
 from typing import Literal
 from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends
@@ -8,6 +9,8 @@ from sqlalchemy.orm import Session
 from .database import get_db
 from .models import SensorReads, Status
 from .schema import AvgDataOut, TelemetryOut, TelemetryPoint
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
