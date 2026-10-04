@@ -9,9 +9,17 @@ from .schema import AvgDataOut
 
 router = APIRouter()
 
-@router.get("/health")
-def get_health():
-    return {"status": "ok"}
+@router.get("/telemetry")
+async def get_current_data(metric: str, range: int, db: Session = Depends(get_db)):
+    return
+
+@router.get("/telemetry/current")
+async def get_current_data(device_id: str, db: Session = Depends(get_db)):
+    return
+
+@router.get("/nodes")
+async def get_diag_nodes(db: Session = Depends(get_db)):
+    return
 
 @router.get("/average", response_model=AvgDataOut)
 def get_data(db: Session = Depends(get_db)):
