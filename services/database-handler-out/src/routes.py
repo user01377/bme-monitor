@@ -1,5 +1,5 @@
 from typing import Literal
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends
 
 from sqlalchemy import func, select
@@ -20,7 +20,7 @@ async def get_current_data(metric: Literal["temp", "humidity", "pressure"], rang
         "pressure": SensorReads.pressure,
     }
 
-    start_time = datetime.now() - timedelta(hours=range)
+    start_time = datetime.now(timezone.utc) - timedelta(hours=range)
 
     stmt = (
         select(SensorReads.timestamp, metric_column[metric])
