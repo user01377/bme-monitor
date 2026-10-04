@@ -7,8 +7,8 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from .database import get_db
-from .models import SensorReads, Status
-from .schema import AvgDataOut, TelemetryOut, TelemetryPoint, TelemetryCurrentOut
+from .models import SensorReads, DiagnosticData, Status
+from .schema import AvgDataOut, TelemetryOut, TelemetryPoint, TelemetryCurrentOut, NodeResponseOut, NodeResponseList
 
 logger = logging.getLogger(__name__)
 
@@ -61,9 +61,32 @@ async def get_current_data(device_id: str, db: Session = Depends(get_db)):
         pressure=data[2]
     )
 
-@router.get("/nodes")
-async def get_diag_nodes(db: Session = Depends(get_db)):
-    return
+@router.get("/nodes", response_model=NodeResponseOut)
+async def get_diag_nodes(device_id: str | None = None, db: Session = Depends(get_db)):
+    
+    stmt = (
+        select(DiagnosticData.device, DiagnosticData.timestamp, DiagnosticData.rssi, DiagnosticData.uptime, DiagnosticData.reset)
+        .distinct(DiagnosticData.device)
+        .order_by(
+            DiagnosticData.device,
+            DiagnosticData.timestamp.desc()
+        )
+    )
+
+    if device_id:
+        stmt = stmt.where(DiagnosticData.device == device_id)
+
+    data = db.execute(stmt).all()
+
+    return NodeResponseOut(
+        data=[NodeResponseList(
+            device=row[0],
+            timestamp=row[1],
+            rssi=row[2],
+            uptime=row[3],
+            reset=row[4]
+        ) for row in data]
+    )
 
 @router.get("/average", response_model=AvgDataOut)
 def get_data(db: Session = Depends(get_db)):
