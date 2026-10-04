@@ -10,7 +10,7 @@ from .schema import AvgDataOut
 router = APIRouter()
 
 @router.get("/telemetry")
-async def get_current_data(metric: str, range: int, db: Session = Depends(get_db)):
+async def get_current_data(metric: str, range: int, device_id: str | None = None, db: Session = Depends(get_db)):
     return
 
 @router.get("/telemetry/current")
