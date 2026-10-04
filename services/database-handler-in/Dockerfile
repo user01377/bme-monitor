@@ -1,25 +1,26 @@
 FROM python:3.14-slim AS base
 
-WORKDIR /app
+COPY --from=astral/uv:latest /uv /uvx /bin/
 
-COPY pyproject.toml .
+WORKDIR /app
+ENV PATH="/app/.venv/bin:$PATH"
+
+COPY pyproject.toml uv.lock ./
+
+RUN uv sync --frozen --no-dev
 
 COPY logging.yaml .
 
 COPY src/ ./src/
 
-RUN pip install --no-cache-dir .
-
 FROM base AS test
 
-RUN pip install ".[test]"
-
-RUN pip install --no-cache-dir ".[test]"
+RUN uv sync --frozen --extra test
 
 COPY tests/ ./tests
 
-CMD ["pytest", "-q", "--strict-markers"]
+CMD ["uv", "run", "pytest", "-q", "--strict-markers"]
 
 FROM base AS production
 
-CMD ["python", "-m" ,"src.main"]
+CMD ["uv", "run", "python", "-m" ,"src.main"]
