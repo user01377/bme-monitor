@@ -1,3 +1,5 @@
+from typing import Literal
+from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends
 
 from sqlalchemy import func, select
@@ -5,13 +7,38 @@ from sqlalchemy.orm import Session
 
 from .database import get_db
 from .models import SensorReads, Status
-from .schema import AvgDataOut
+from .schema import AvgDataOut, TelemetryOut, TelemetryPoint
 
 router = APIRouter()
 
-@router.get("/telemetry")
-async def get_current_data(metric: str, range: int, device_id: str | None = None, db: Session = Depends(get_db)):
-    return
+@router.get("/telemetry", response_model=TelemetryOut)
+async def get_current_data(metric: Literal["temp", "humidity", "pressure"], range: int = 24, device_id: str | None = None, db: Session = Depends(get_db)):
+    # maps string to database column
+    metric_column = {
+        "temp": SensorReads.temp,
+        "humidity": SensorReads.humidity,
+        "pressure": SensorReads.pressure,
+    }
+
+    start_time = datetime.now() - timedelta(hours=range)
+
+    stmt = (
+        select(SensorReads.timestamp, metric_column[metric])
+        .where(
+            SensorReads.timestamp >= start_time
+        )
+        .order_by(SensorReads.timestamp)
+    )
+
+    if device_id:
+        stmt = stmt.where(SensorReads.device_id == device_id)
+
+    data = db.execute(stmt).all()
+
+    return TelemetryOut(
+        metric=metric,
+        data=[TelemetryPoint(timestamp=row[0], value=row[1]) for row in data]
+    )
 
 @router.get("/telemetry/current")
 async def get_current_data(device_id: str, db: Session = Depends(get_db)):
