@@ -14,3 +14,8 @@ class TelemetryPoint(BaseModel):
 class TelemetryOut(BaseModel):
     metric: Literal["temp", "humidity", "pressure"]
     data: list[TelemetryPoint]
+
+class TelemetryCurrentOut(BaseModel):
+    temperature: float
+    humidity: float
+    pressure: float
