@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 @router.get("/telemetry", response_model=TelemetryOut)
-async def get_current_data(metric: Literal["temp", "humidity", "pressure"], range: int = 24, device_id: str | None = None, db: Session = Depends(get_db)):
+async def get_telemetry(metric: Literal["temp", "humidity", "pressure"], range: int = 24, device_id: str | None = None, db: Session = Depends(get_db)):
     # maps string to database column
     metric_column = {
         "temp": SensorReads.temp,
