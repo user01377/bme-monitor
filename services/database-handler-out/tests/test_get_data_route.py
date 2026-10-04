@@ -7,7 +7,7 @@ client = TestClient(app)
 
 def test_get_average_data(seeded_db):
 
-    response = client.get("telemetry/average/")
+    response = client.get("/average")
 
     assert response.status_code == 200
 
