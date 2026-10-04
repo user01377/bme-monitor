@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from .database import get_db
 from .models import SensorReads, Status
-from .schema import AvgDataOut, TelemetryOut, TelemetryPoint
+from .schema import AvgDataOut, TelemetryOut, TelemetryPoint, TelemetryCurrentOut
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ async def get_telemetry(metric: Literal["temp", "humidity", "pressure"], range: 
     )
 
     if device_id:
-        stmt = stmt.where(SensorReads.device_id == device_id)
+        stmt = stmt.where(SensorReads.device == device_id)
 
     data = db.execute(stmt).all()
 
@@ -43,9 +43,23 @@ async def get_telemetry(metric: Literal["temp", "humidity", "pressure"], range: 
         data=[TelemetryPoint(timestamp=row[0], value=row[1]) for row in data]
     )
 
-@router.get("/telemetry/current")
+@router.get("/telemetry/current", response_model=TelemetryCurrentOut)
 async def get_current_data(device_id: str, db: Session = Depends(get_db)):
-    return
+    
+    stmt = (
+        select(SensorReads.temp, SensorReads.humidity, SensorReads.pressure)
+        .where(SensorReads.device == device_id)
+        .order_by(SensorReads.timestamp.desc())
+        .limit(1)
+    )
+
+    data = db.execute(stmt).one_or_none()
+
+    return TelemetryCurrentOut(
+        temperature=data[0],
+        humidity=data[1],
+        pressure=data[2]
+    )
 
 @router.get("/nodes")
 async def get_diag_nodes(db: Session = Depends(get_db)):
