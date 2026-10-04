@@ -1,5 +1,5 @@
 from typing import Literal
-import datetime
+from datetime import datetime
 from pydantic import BaseModel
 
 class AvgDataOut(BaseModel):
