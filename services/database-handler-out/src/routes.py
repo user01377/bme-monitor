@@ -1,7 +1,7 @@
 import logging
 from typing import Literal
 from datetime import datetime, timedelta, timezone
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -14,8 +14,21 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
+def verify_device(device_id: str, db) -> bool:
+    stmt = (
+        select(SensorReads.device)
+        .where(SensorReads.device == device_id)
+        .limit(1)
+    )
+
+    return db.execute(stmt).scalar_one_or_none() is not None
+
 @router.get("/telemetry", response_model=TelemetryOut)
-async def get_telemetry(metric: Literal["temp", "humidity", "pressure"], range: int = 24, device_id: str | None = None, db: Session = Depends(get_db)):
+async def get_telemetry(device_id: str, metric: Literal["temp", "humidity", "pressure"], range: int = 24, db: Session = Depends(get_db)):
+
+    if not verify_device(device_id, db):
+        raise HTTPException(status_code=404, detail="Device Not Found")
+
     # maps string to database column
     metric_column = {
         "temp": SensorReads.temp,
@@ -28,15 +41,16 @@ async def get_telemetry(metric: Literal["temp", "humidity", "pressure"], range: 
     stmt = (
         select(SensorReads.timestamp, metric_column[metric])
         .where(
+            SensorReads.device == device_id,
             SensorReads.timestamp >= start_time
         )
         .order_by(SensorReads.timestamp)
     )
 
-    if device_id:
-        stmt = stmt.where(SensorReads.device == device_id)
-
     data = db.execute(stmt).all()
+
+    if (len(data) == 0):
+        raise HTTPException(status_code=404, detail="No Readings In Time Period")
 
     return TelemetryOut(
         metric=metric,
