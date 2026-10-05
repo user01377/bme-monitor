@@ -1,22 +1,34 @@
 # API Structure
 
+> **Internal API**
+>
+> These endpoints are intended for internal communication between the `data-server` and `data-handler-out` service. They are not intended to be exposed directly to external clients.
+
 ## `GET /telemetry`
 
-Represents a generic telemetry data GET route for retrieving telemetry data from ESP32 nodes.
+Represents a generic telemetry data GET route for retrieving telemetry data from an ESP32 node.
 
-A device must be specified when querying telemetry. The `range` query parameter is optional and defaults to returning all readings from the past 24 hours.
+A device must be specified when querying telemetry. The `range` query parameter is optional and defaults to returning readings from the past 24 hours.
+
+The route supports retrieving a single telemetry metric: temperature, humidity, or pressure.
 
 ### Query Parameters
 
-| Parameter   | Type  | Required | Description                                                     |
-| ----------- | ----- | -------- | --------------------------------------------------------------- |
-| `device_id` | `str` | Yes      | ID of the ESP32 node to query                                   |
-| `metric`    | `str` | Yes      | Telemetry metric to retrieve: `temp`, `humidity`, or `pressure` |
-| `range`     | `int` | No       | Number of hours of telemetry to retrieve. Defaults to `24`.     |
+| Parameter     | Type    | Required | Description                                                          |
+| ------------- | ------- | -------- | -------------------------------------------------------------------- |
+| `device_id` | `str` | Yes      | ID of the ESP32 node to query                                        |
+| `metric`    | `str` | Yes      | Telemetry metric to retrieve:`temp`, `humidity`, or `pressure` |
+| `range`     | `int` | No       | Number of hours of telemetry to retrieve. Defaults to`24`.         |
 
-### Response Structure
+### Behavior
 
-Example JSON response:
+The route only returns readings belonging to the specified device and whose timestamps fall within the requested time range. Results are ordered chronologically from oldest to newest.
+
+### Responses
+
+**`200 OK`**
+
+Example:
 
 ```json
 {
@@ -34,6 +46,28 @@ Example JSON response:
 }
 ```
 
+**`404 Not Found`**
+
+Returned when the specified device does not exist:
+
+```json
+{
+  "detail": "Device Not Found"
+}
+```
+
+Returned when the device exists but has no readings within the requested time period:
+
+```json
+{
+  "detail": "No Readings In Time Period"
+}
+```
+
+**`422 Unprocessable Entity`**
+
+Returned when a required parameter is missing or an invalid value is provided for `metric`.
+
 ---
 
 ## `GET /telemetry/current`
@@ -44,13 +78,19 @@ Returns the most recent temperature, humidity, and pressure readings from the sp
 
 ### Query Parameters
 
-| Parameter   | Type  | Required | Description                   |
-| ----------- | ----- | -------- | ----------------------------- |
+| Parameter     | Type    | Required | Description                   |
+| ------------- | ------- | -------- | ----------------------------- |
 | `device_id` | `str` | Yes      | ID of the ESP32 node to query |
 
-### Response Structure
+### Behavior
 
-Example JSON response:
+The route retrieves the most recent telemetry reading for the specified device based on its timestamp.
+
+### Responses
+
+**`200 OK`**
+
+Example:
 
 ```json
 {
@@ -60,21 +100,45 @@ Example JSON response:
 }
 ```
 
+**`404 Not Found`**
+
+Returned when the specified device does not exist.
+
+```json
+{
+  "detail": "Device Not Found"
+}
+```
+
+**`422 Unprocessable Entity`**
+
+Returned when `device_id` is not provided.
+
 ---
 
 ## `GET /nodes`
 
-Represents diagnostic data for the ESP32 nodes.
+Represents diagnostic data for ESP32 nodes.
+
+The `device_id` parameter is optional. When omitted, the route returns the most recent diagnostic record for each device. When specified, it returns the most recent diagnostic record for that device.
 
 ### Query Parameters
 
-| Parameter   | Type  | Required | Description                   |
-| ----------- | ----- | -------- | ----------------------------- |
-| `device_id` | `str` | Yes      | ID of the ESP32 node to query |
+| Parameter     | Type    | Required | Description                                                                               |
+| ------------- | ------- | -------- | ----------------------------------------------------------------------------------------- |
+| `device_id` | `str` | No       | ID of the ESP32 node to query. When omitted, diagnostic data for all devices is returned. |
 
-### Response Structure
+### Behavior
 
-Example JSON response:
+The route returns the latest diagnostic record for each device, determined by the most recent timestamp.
+
+When `device_id` is provided, only the latest diagnostic record for that device is returned.
+
+### Responses
+
+**`200 OK`**
+
+Example:
 
 ```json
 {
@@ -85,7 +149,28 @@ Example JSON response:
       "rssi": -48,
       "uptime": 86400,
       "reset": "power_on"
+    },
+    {
+      "device": "esp32-02",
+      "timestamp": "2026-10-04T17:55:00Z",
+      "rssi": -62,
+      "uptime": 604800,
+      "reset": "software"
     }
   ]
 }
 ```
+
+**`404 Not Found`**
+
+When a `device_id` is provided but the device does not exist:
+
+```json
+{
+  "detail": "Device Not Found"
+}
+```
+
+**`422 Unprocessable Entity`**
+
+Not applicable when `device_id` is omitted, since it is an optional parameter.
