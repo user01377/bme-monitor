@@ -16,11 +16,17 @@ def test_process_payload(mocker):
             "humidity": 5000,
             "pressure": 101325,
         },
+        "diagnostics": {
+            "rssi": -55,
+            "uptime": 5000,
+            "reset": "n/a",
+        },
     }
 
     process_payload(payload, session)
 
-    sensor_read = session.add.call_args.args[0]
+    sensor_read = session.add.call_args_list[0].args[0]
+    diag_data = session.add.call_args_list[1].args[0]
     
     assert sensor_read.device == "test-device"
     assert sensor_read.temp == 77.0
@@ -31,6 +37,11 @@ def test_process_payload(mocker):
         1758312000,
         tz=timezone.utc,
     )
+
+    assert diag_data.device == "test-device"
+    assert diag_data.rssi == -55
+    assert diag_data.uptime == 5000
+    assert diag_data.reset == "n/a"
 
     session.commit.assert_called_once()
 
@@ -46,15 +57,28 @@ def test_process_payload_negative_temperature(mocker):
             "humidity": 4500,
             "pressure": 100000,
         },
+        "diagnostics": {
+            "rssi": -55,
+            "uptime": 5000,
+            "reset": "n/a",
+        },
     }
 
     process_payload(payload, session)
 
-    sensor_read = session.add.call_args.args[0]
+    sensor_read = session.add.call_args_list[0].args[0]
+    diag_data = session.add.call_args_list[1].args[0]
 
     assert sensor_read.temp == 23.0
     assert sensor_read.humidity == 45.0
     assert sensor_read.pressure == 1000.0
+
+    assert diag_data.device == "test-device"
+    assert diag_data.rssi == -55
+    assert diag_data.uptime == 5000
+    assert diag_data.reset == "n/a"
+
+    session.commit.assert_called_once()
 
 def test_process_payload_missing_data_field(mocker):
     session = mocker.Mock()
@@ -80,6 +104,11 @@ def test_process_payload_missing_reading(mocker):
             # is missing the temperature field
             "humidity": 4500,
             "pressure": 100000
+        },
+        "diagnostics": {
+            "rssi": -55,
+            "uptime": 5000,
+            "reset": "n/a",
         },
     }
 

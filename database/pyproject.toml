@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bme-database-migration"
+version = "0.1.0"
+description = "Migration image to migrate the main PostgreSQL database"
+
+requires-python = ">=3.12"
+dependencies=[
+    "alembic",
+    "psycopg[binary]",
+    "python-dotenv",
+    "sqlalchemy"
+]

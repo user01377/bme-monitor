@@ -1,4 +1,5 @@
 import pytest
+import datetime
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -43,6 +44,17 @@ def seeded_db(db_session):
             humidity=40,
             pressure=1000,
             status=Status.VALID,
+            timestamp=datetime.datetime.now(datetime.UTC)
+            - datetime.timedelta(hours=2),
+        ),
+        SensorReads(
+            device="test-device",
+            temp=20,
+            humidity=40,
+            pressure=1000,
+            status=Status.VALID,
+            timestamp=datetime.datetime.now(datetime.UTC)
+            - datetime.timedelta(hours=3),
         ),
         SensorReads(
             device="test-device",
@@ -50,6 +62,8 @@ def seeded_db(db_session):
             humidity=60,
             pressure=1020,
             status=Status.VALID,
+            timestamp=datetime.datetime.now(datetime.UTC)
+            - datetime.timedelta(hours=6),
         ),
     ])
 

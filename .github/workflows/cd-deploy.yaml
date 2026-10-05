@@ -1,15 +1,22 @@
 name: CD
 
+run-name: ${{ github.event.workflow_run.head_commit.message }}
+
 on:
   workflow_run:
     workflows: ["CI"]
     types: [completed]
+    
+  workflow_dispatch:
 
 jobs:
   deploy:
     if: >
+      github.event_name == 'workflow_dispatch' ||
+      (
         github.event.workflow_run.conclusion == 'success' &&
         github.event.workflow_run.head_branch == 'main'
+      )
     name: Deploy to Server
     runs-on: self-hosted
 
@@ -24,6 +31,13 @@ jobs:
           docker pull ghcr.io/user01377/bme-handler-out:${{ github.event.workflow_run.head_sha }}
           docker pull ghcr.io/user01377/bme-data-server:${{ github.event.workflow_run.head_sha }}
           docker pull ghcr.io/user01377/bme-database-migration:${{ github.event.workflow_run.head_sha }}
+      
+      - name: Update Repository
+        run: |
+          git fetch origin
+          git reset --hard origin/main
+          
+        working-directory: /home/macser/bme-monitor
       
       - name: Restart Containers
         run: |
