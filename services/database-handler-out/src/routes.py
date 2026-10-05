@@ -107,28 +107,3 @@ async def get_diag_nodes(device_id: str | None = None, db: Session = Depends(get
             reset=row[4]
         ) for row in data]
     )
-
-@router.get("/average", response_model=AvgDataOut)
-def get_data(db: Session = Depends(get_db)):
-    """
-    Returns AVG of each data point
-    """
-
-    stmt = select(
-    func.avg(SensorReads.temp).label("temperature"),
-    func.avg(SensorReads.humidity).label("humidity"),
-    func.avg(SensorReads.pressure).label("pressure"),
-    ).where(
-        SensorReads.status.in_([
-            Status.VALID,
-            Status.MANUAL_INC
-        ])
-    )
-
-    result = db.execute(stmt).one()
-
-    return AvgDataOut(
-        temperature=result.temperature,
-        humidity=result.humidity,
-        pressure=result.pressure
-    )
