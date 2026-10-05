@@ -59,6 +59,9 @@ async def get_telemetry(device_id: str, metric: Literal["temp", "humidity", "pre
 
 @router.get("/telemetry/current", response_model=TelemetryCurrentOut)
 async def get_current_data(device_id: str, db: Session = Depends(get_db)):
+
+    if not verify_device(device_id, db):
+        raise HTTPException(status_code=404, detail="Device Not Found")
     
     stmt = (
         select(SensorReads.temp, SensorReads.humidity, SensorReads.pressure)
