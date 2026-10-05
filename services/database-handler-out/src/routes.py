@@ -80,6 +80,9 @@ async def get_current_data(device_id: str, db: Session = Depends(get_db)):
 
 @router.get("/nodes", response_model=NodeResponseOut)
 async def get_diag_nodes(device_id: str | None = None, db: Session = Depends(get_db)):
+
+    if device_id and not verify_device(device_id, db):
+        raise HTTPException(status_code=404, detail="Device Not Found")
     
     stmt = (
         select(DiagnosticData.device, DiagnosticData.timestamp, DiagnosticData.rssi, DiagnosticData.uptime, DiagnosticData.reset)
