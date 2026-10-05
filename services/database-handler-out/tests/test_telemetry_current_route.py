@@ -1,7 +1,6 @@
 from fastapi.testclient import TestClient
 
 from src.main import app
-from src.models import SensorReads, Status
 
 client = TestClient(app)
 
