@@ -1,9 +1,10 @@
 import './App.css'
+import BMEDashboard from './pages/dashboard'
 
 function App() {
   
   return (
-    <h1>Test</h1>
+    BMEDashboard()
   )
 }
 
