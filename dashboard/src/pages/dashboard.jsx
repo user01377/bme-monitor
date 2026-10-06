@@ -2,6 +2,10 @@
 
 export default function BMEDashboard() {
     return (
-        <h1>Dashboard</h1>
+        <main id="bme-dashboard">
+            <div id="dashboard-wrapper">
+
+            </div>
+        </main>
     )
 }
