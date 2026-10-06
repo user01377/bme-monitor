@@ -14,4 +14,4 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-app.include_router(router, prefix="/api/telemetry")
+app.include_router(router, prefix="/api")
