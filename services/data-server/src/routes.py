@@ -1,15 +1,16 @@
 import hashlib
 import datetime
+from typing import Literal
+import httpx
 from fastapi import APIRouter, HTTPException, Depends, Request
 from fastapi.security import APIKeyHeader
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from .models import ApiToken
 from .database import get_db
-from .schema import AvgDataOut
+from .schema import TelemetryOut
 
 api_key = APIKeyHeader(name="X-API-Key")
-
 
 def hash_token(token: str):
     return hashlib.sha256(token.encode()).hexdigest()
@@ -29,14 +30,20 @@ def authenticate_user(token: str = Depends(api_key), db: Session = Depends(get_d
     
     return api_token
 
+def handle_downstream_error(response: httpx.Response):
+    try:
+        response.raise_for_status()
+    except httpx.HTTPStatusError as error:
+        raise HTTPException(status_code=error.response.status_code, detail=error.response.json()["detail"])
+
 router = APIRouter(dependencies=[Depends(authenticate_user)])
 
-# will convert this route to handle query params
-@router.get("/average", response_model=AvgDataOut)
-async def get_average_telemetry(request: Request):
+@router.get("/telemetry", response_model=TelemetryOut)
+async def get_telemetry(request: Request, device_id: str, metric: Literal["temp", "humidity", "pressure"], range: int = 24):
     client = request.app.state.http_client
 
-    response = await client.get("/telemetry/average")
-    response.raise_for_status()
+    response = await client.get("/telemetry", params={"device_id": device_id, "metric": metric, "range": range})
+
+    handle_downstream_error(response)
 
     return response.json()
