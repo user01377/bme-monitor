@@ -50,7 +50,7 @@ async def get_telemetry(device_id: str, metric: Literal["temp", "humidity", "pre
     return response.json()
 
 @router.get("/telemetry/current", response_model=TelemetryCurrentOut)
-async def get_telemetry(device_id: str, client: httpx.AsyncClient = Depends(get_http_client)):
+async def get_current_telemetry(device_id: str, client: httpx.AsyncClient = Depends(get_http_client)):
     response = await client.get("/telemetry/current", params={"device_id": device_id})
 
     handle_downstream_error(response)
@@ -58,7 +58,7 @@ async def get_telemetry(device_id: str, client: httpx.AsyncClient = Depends(get_
     return response.json()
 
 @router.get("/nodes", response_model=NodeResponseOut)
-async def get_telemetry(device_id: str | None = None, client: httpx.AsyncClient = Depends(get_http_client)):
+async def get_nodes_diag(device_id: str | None = None, client: httpx.AsyncClient = Depends(get_http_client)):
     response = await client.get("/nodes", params={"device_id": device_id})
 
     handle_downstream_error(response)
