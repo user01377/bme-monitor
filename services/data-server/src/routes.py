@@ -36,12 +36,13 @@ def handle_downstream_error(response: httpx.Response):
     except httpx.HTTPStatusError as error:
         raise HTTPException(status_code=error.response.status_code, detail=error.response.json()["detail"])
 
+def get_http_client(request: Request) -> httpx.AsyncClient:
+    return request.app.state.http_client
+
 router = APIRouter(dependencies=[Depends(authenticate_user)])
 
 @router.get("/telemetry", response_model=TelemetryOut)
-async def get_telemetry(request: Request, device_id: str, metric: Literal["temp", "humidity", "pressure"], range: int = 24):
-    client = request.app.state.http_client
-
+async def get_telemetry(device_id: str, metric: Literal["temp", "humidity", "pressure"], range: int = 24, client: httpx.AsyncClient = Depends(get_http_client)):
     response = await client.get("/telemetry", params={"device_id": device_id, "metric": metric, "range": range})
 
     handle_downstream_error(response)
@@ -49,9 +50,7 @@ async def get_telemetry(request: Request, device_id: str, metric: Literal["temp"
     return response.json()
 
 @router.get("/telemetry/current", response_model=TelemetryCurrentOut)
-async def get_telemetry(request: Request, device_id: str):
-    client = request.app.state.http_client
-
+async def get_telemetry(device_id: str, client: httpx.AsyncClient = Depends(get_http_client)):
     response = await client.get("/telemetry/current", params={"device_id": device_id})
 
     handle_downstream_error(response)
@@ -59,9 +58,7 @@ async def get_telemetry(request: Request, device_id: str):
     return response.json()
 
 @router.get("/nodes", response_model=NodeResponseOut)
-async def get_telemetry(request: Request, device_id: str | None = None):
-    client = request.app.state.http_client
-
+async def get_telemetry(device_id: str | None = None, client: httpx.AsyncClient = Depends(get_http_client)):
     response = await client.get("/nodes", params={"device_id": device_id})
 
     handle_downstream_error(response)
