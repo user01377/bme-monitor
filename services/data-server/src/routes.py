@@ -36,8 +36,7 @@ def handle_downstream_error(response: httpx.Response):
     except httpx.HTTPStatusError as error:
         raise HTTPException(status_code=error.response.status_code, detail=error.response.json()["detail"])
 
-# router = APIRouter(dependencies=[Depends(authenticate_user)])
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(authenticate_user)])
 
 @router.get("/telemetry", response_model=TelemetryOut)
 async def get_telemetry(request: Request, device_id: str, metric: Literal["temp", "humidity", "pressure"], range: int = 24):
