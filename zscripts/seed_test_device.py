@@ -1,3 +1,10 @@
+"""
+TO BE COPIED AND PASTED INTO THE SCRIPTS/ FOR THE DATA-RECEIVER DOCKER CONTAINER
+UNCOMMENTED ALL CODE BELOW BEFORE COPYING IN
+
+DO NOT COPY THIS SCRIPT IN ON PROD
+"""
+
 # from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 # from src.database import SessionLocal

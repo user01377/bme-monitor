@@ -1,0 +1,17 @@
+:root {
+  /* background color styles */
+  --bg-day: rgb(98,193,229);
+  --bg-night: rgb(25,20,55);
+
+  /* text styles */
+  --text-primary: rgba(255, 255, 255, 1);
+  --text-secondary: rgba(255, 255, 255, 0.75);
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --text-subtle: rgba(255, 255, 255, 0.45); 
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-day);
+}
