@@ -2,8 +2,16 @@ import React, { useEffect } from "react";
 import { getTelemetry, getCurrentTelemetry, getNodes } from "../utils/telemetry"
 
 const [telemetry, setTelemetry] = useState(null);
-const [error, setError] = useState(null);
-const [loading, setLoading] = useState(true);
+const [telemetryError, setTelemetryError] = useState(null);
+const [telemetryLoading, setTelemetryLoading] = useState(true);
+
+const [currentTelemetry, currentcurrentTelemetry] = useState(null);
+const [currentLoading, setCurrentLoading] = useState(true);
+const [currentError, setCurrentError] = useState(null);
+
+const [nodes, setNodes] = useState(null);
+const [nodesLoading, setNodesLoading] = useState(true);
+const [nodesError, setNodesError] = useState(null);
 
 // calls the getTelemetry helper to get data from /telemetry route
 useEffect(() => {
