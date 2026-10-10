@@ -1,5 +1,6 @@
 import logging
 from typing import Literal
+from zoneinfo import ZoneInfo
 from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException
 
@@ -98,9 +99,32 @@ async def get_diag_nodes(device_id: str | None = None, db: Session = Depends(get
 
     data = db.execute(stmt).all()
 
+    # defining what the start of the "day" is
+    current_zone = ZoneInfo("America/New_York")
+    start_local = datetime.now(current_zone).replace(hour=0, minute=0, second=0, microsecond=0)
+
+    start_time = start_local.astimezone(timezone.utc)
+    end_time = (start_local + timedelta(days=1)).astimezone(timezone.utc)
+
+    count_stmt = (
+        select(SensorReads.device, func.count(SensorReads.id).label("readings"))
+        .where(
+            SensorReads.timestamp >= start_time,
+            SensorReads.timestamp < end_time,
+        )
+        .group_by(SensorReads.device)
+    )
+
+    if device_id:
+        count_stmt = count_stmt.where(SensorReads.device == device_id)
+
+    # creates a dictionary which maps device_id to its readings for that day
+    current_reading_count = {row.device: row.readings for row in db.execute(count_stmt).all()}
+
     return NodeResponseOut(
         data=[NodeResponseList(
             device=row[0],
+            readings=current_reading_count.get(row[0], 0), # use dictionary created to get reading count associated with the device_id, default to zero if no readings exist.
             timestamp=row[1],
             rssi=row[2],
             uptime=row[3],
