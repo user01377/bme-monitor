@@ -17,6 +17,7 @@ class TelemetryCurrentOut(BaseModel):
 
 class NodeResponseList(BaseModel):
     device: str
+    readings: int # readings today
     timestamp: datetime
     rssi: int
     uptime: int
