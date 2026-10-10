@@ -1,4 +1,5 @@
-
+import React, { useEffect } from "react";
+import { getTelemetry, getCurrentTelemetry, getNodes } from "../utils/telemetry"
 
 export default function BMEDashboard() {
     return (
