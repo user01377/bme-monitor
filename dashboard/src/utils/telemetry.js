@@ -30,6 +30,20 @@ export async function getCurrentTelemetry(device_id) {
     return response.json();
 }
 
-export async function getNodes() {
+export async function getNodes(device_id) {
+    let url = `${API_URL}/api/nodes`;
+
+    if (device_id) {
+        const params = new URLSearchParams({ device_id });
+        
+        url += `?${params}`;
+      }
     
-} 
+      const response = await fetch(url);
+    
+      if (!response.ok) {
+        throw new Error(`Failed to fetch nodes: ${response.status}`);
+      }
+    
+      return response.json();
+}
