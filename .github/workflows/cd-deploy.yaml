@@ -1,6 +1,6 @@
 name: CD
 
-run-name: ${{ github.event.workflow_run.head_commit.message }}
+run-name: Deploy ${{ github.event.workflow_run.head_sha }}
 
 on:
   workflow_run:
