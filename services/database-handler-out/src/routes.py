@@ -105,7 +105,7 @@ def get_current_data(device_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Device Not Found")
     
     stmt = (
-        select(SensorReads.temp, SensorReads.humidity, SensorReads.pressure)
+        select(SensorReads.temp, SensorReads.humidity, SensorReads.pressure, SensorReads.timestamp)
         .where(SensorReads.device == device_id)
         .order_by(SensorReads.timestamp.desc())
         .limit(1)
@@ -119,7 +119,8 @@ def get_current_data(device_id: str, db: Session = Depends(get_db)):
     return TelemetryCurrentOut(
         temperature=data[0],
         humidity=data[1],
-        pressure=data[2]
+        pressure=data[2],
+        timestamp=data[3]
     )
 
 @router.get("/nodes", response_model=NodeResponseOut)

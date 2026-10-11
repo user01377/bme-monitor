@@ -25,6 +25,7 @@ class TelemetryCurrentOut(BaseModel):
     temperature: float
     humidity: float
     pressure: float
+    timestamp: datetime
 
 class NodeResponseList(BaseModel):
     device: str
