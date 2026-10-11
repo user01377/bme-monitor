@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from .database import get_db
 from .models import SensorReads, DiagnosticData, Status
-from .schema import AvgDataOut, TelemetryOut, TelemetryPoint, TelemetryCurrentOut, NodeResponseOut, NodeResponseList
+from .schema import TelemetryOut, TelemetryPoint, TelemetryCurrentOut, NodeResponseOut, NodeResponseList, TelemetrySummaryOut, TelemetrySummaryList
 
 logger = logging.getLogger(__name__)
 
@@ -130,4 +130,67 @@ async def get_diag_nodes(device_id: str | None = None, db: Session = Depends(get
             uptime=row[3],
             reset=row[4]
         ) for row in data]
+    )
+
+@router.get("/telemetry/summary", response_model=TelemetrySummaryOut)
+def get_telemetry_summary(db: Session = Depends(get_db)):
+
+    current_zone = ZoneInfo("America/New_York")
+    start_local = datetime.now(current_zone).replace(hour=0, minute=0, second=0, microsecond=0)
+
+    start_time = start_local.astimezone(timezone.utc)
+    end_time = (start_local + timedelta(days=1)).astimezone(timezone.utc)
+
+    avg_stmt = (
+        select(func.avg(SensorReads.temp), func.avg(SensorReads.humidity), func.avg(SensorReads.pressure))
+        .where(
+            SensorReads.timestamp >= start_time,
+            SensorReads.timestamp < end_time,
+        )
+    )
+
+    max_stmt = (
+        select(func.max(SensorReads.temp), func.max(SensorReads.humidity), func.max(SensorReads.pressure))
+        .where(
+            SensorReads.timestamp >= start_time,
+            SensorReads.timestamp < end_time,
+        )
+    )
+
+    min_stmt = (
+        select(func.min(SensorReads.temp), func.min(SensorReads.humidity), func.min(SensorReads.pressure))
+        .where(
+            SensorReads.timestamp >= start_time,
+            SensorReads.timestamp < end_time,
+        )
+    )
+
+    avg_data = db.execute(avg_stmt).one();
+    max_data = db.execute(max_stmt).one();
+    min_data = db.execute(min_stmt).one();
+
+    if avg_data[0] is None:
+        raise HTTPException(status_code=404, detail="No Readings Today")
+
+    return TelemetrySummaryOut(
+        data=[
+            TelemetrySummaryList(
+                reading="avg",
+                temp=avg_data[0],
+                humidity=avg_data[1],
+                pressure=avg_data[2]
+            ),
+            TelemetrySummaryList(
+                reading="high",
+                temp=max_data[0],
+                humidity=max_data[1],
+                pressure=max_data[2]
+            ),
+            TelemetrySummaryList(
+                reading="low",
+                temp=min_data[0],
+                humidity=min_data[1],
+                pressure=min_data[2]
+            )
+        ]
     )
