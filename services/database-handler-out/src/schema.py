@@ -30,3 +30,12 @@ class NodeResponseList(BaseModel):
 
 class NodeResponseOut(BaseModel):
     data: list[NodeResponseList]
+
+class TelemetrySummaryList(BaseModel):
+    reading: str # avg, high, low
+    temp: float
+    humidity: float
+    pressure: float
+
+class TelemetrySummaryOut(BaseModel):
+    data: list[TelemetrySummaryList]
