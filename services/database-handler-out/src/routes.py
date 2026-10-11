@@ -24,8 +24,19 @@ def verify_device(device_id: str, db) -> bool:
 
     return db.execute(stmt).scalar_one_or_none() is not None
 
+def calculate_start_end_day() -> tuple[datetime, datetime]:
+    # defines what the start and end time of the current day is
+    
+    current_zone = ZoneInfo("America/New_York")
+    start_local = datetime.now(current_zone).replace(hour=0, minute=0, second=0, microsecond=0)
+
+    start_time = start_local.astimezone(timezone.utc)
+    end_time = (start_local + timedelta(days=1)).astimezone(timezone.utc)
+
+    return start_time, end_time
+
 @router.get("/telemetry", response_model=TelemetryOut)
-async def get_telemetry(device_id: str, metric: Literal["temp", "humidity", "pressure"], range: int = 24, db: Session = Depends(get_db)):
+def get_telemetry(device_id: str, metric: Literal["temp", "humidity", "pressure"], range: int = 24, db: Session = Depends(get_db)):
 
     if not verify_device(device_id, db):
         raise HTTPException(status_code=404, detail="Device Not Found")
@@ -59,7 +70,7 @@ async def get_telemetry(device_id: str, metric: Literal["temp", "humidity", "pre
     )
 
 @router.get("/telemetry/current", response_model=TelemetryCurrentOut)
-async def get_current_data(device_id: str, db: Session = Depends(get_db)):
+def get_current_data(device_id: str, db: Session = Depends(get_db)):
 
     if not verify_device(device_id, db):
         raise HTTPException(status_code=404, detail="Device Not Found")
@@ -73,6 +84,9 @@ async def get_current_data(device_id: str, db: Session = Depends(get_db)):
 
     data = db.execute(stmt).one_or_none()
 
+    if data is None:
+        raise HTTPException(status_code=404, detail="No Readings Found")
+
     return TelemetryCurrentOut(
         temperature=data[0],
         humidity=data[1],
@@ -80,10 +94,12 @@ async def get_current_data(device_id: str, db: Session = Depends(get_db)):
     )
 
 @router.get("/nodes", response_model=NodeResponseOut)
-async def get_diag_nodes(device_id: str | None = None, db: Session = Depends(get_db)):
+def get_diag_nodes(device_id: str | None = None, db: Session = Depends(get_db)):
 
     if device_id and not verify_device(device_id, db):
         raise HTTPException(status_code=404, detail="Device Not Found")
+    
+    start_time, end_time = calculate_start_end_day()
     
     stmt = (
         select(DiagnosticData.device, DiagnosticData.timestamp, DiagnosticData.rssi, DiagnosticData.uptime, DiagnosticData.reset)
@@ -93,18 +109,6 @@ async def get_diag_nodes(device_id: str | None = None, db: Session = Depends(get
             DiagnosticData.timestamp.desc()
         )
     )
-
-    if device_id:
-        stmt = stmt.where(DiagnosticData.device == device_id)
-
-    data = db.execute(stmt).all()
-
-    # defining what the start of the "day" is
-    current_zone = ZoneInfo("America/New_York")
-    start_local = datetime.now(current_zone).replace(hour=0, minute=0, second=0, microsecond=0)
-
-    start_time = start_local.astimezone(timezone.utc)
-    end_time = (start_local + timedelta(days=1)).astimezone(timezone.utc)
 
     count_stmt = (
         select(SensorReads.device, func.count(SensorReads.id).label("readings"))
@@ -116,7 +120,10 @@ async def get_diag_nodes(device_id: str | None = None, db: Session = Depends(get
     )
 
     if device_id:
+        stmt = stmt.where(DiagnosticData.device == device_id)
         count_stmt = count_stmt.where(SensorReads.device == device_id)
+
+    data = db.execute(stmt).all()
 
     # creates a dictionary which maps device_id to its readings for that day
     current_reading_count = {row.device: row.readings for row in db.execute(count_stmt).all()}
@@ -135,11 +142,7 @@ async def get_diag_nodes(device_id: str | None = None, db: Session = Depends(get
 @router.get("/telemetry/summary", response_model=TelemetrySummaryOut)
 def get_telemetry_summary(db: Session = Depends(get_db)):
 
-    current_zone = ZoneInfo("America/New_York")
-    start_local = datetime.now(current_zone).replace(hour=0, minute=0, second=0, microsecond=0)
-
-    start_time = start_local.astimezone(timezone.utc)
-    end_time = (start_local + timedelta(days=1)).astimezone(timezone.utc)
+    start_time, end_time = calculate_start_end_day()
 
     avg_stmt = (
         select(func.avg(SensorReads.temp), func.avg(SensorReads.humidity), func.avg(SensorReads.pressure))
