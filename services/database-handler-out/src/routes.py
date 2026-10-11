@@ -9,7 +9,10 @@ from sqlalchemy.orm import Session
 
 from .database import get_db
 from .models import SensorReads, DiagnosticData, Status
-from .schema import TelemetryOut, TelemetryPoint, TelemetryCurrentOut, NodeResponseOut, NodeResponseList, TelemetrySummaryOut, TelemetrySummaryList
+from .schema import TelemetryOut, TelemetryPoint, TelemetryCurrentOut, NodeResponseOut, NodeResponseList, TelemetrySummaryOut, TelemetrySummaryList, TelemetryTrendsOut, TelemetryTrendsList, TrendEnum
+
+# variable for how far back the trend data should be compared against /telemetry/trend
+COMPARE_PAST_HOURS = 3
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +37,17 @@ def calculate_start_end_day() -> tuple[datetime, datetime]:
     end_time = (start_local + timedelta(days=1)).astimezone(timezone.utc)
 
     return start_time, end_time
+
+def calculate_trend(current: float, average: float) -> TrendEnum:
+    """
+    Helper function for calculating the enum value for the current trend in telemetry data
+    """
+    if current > average:
+        return TrendEnum.UP
+    elif current < average:
+        return TrendEnum.DOWN
+    
+    return TrendEnum.NEUTRAL
 
 @router.get("/telemetry", response_model=TelemetryOut)
 def get_telemetry(device_id: str, metric: Literal["temp", "humidity", "pressure"], range: int = 24, db: Session = Depends(get_db)):
@@ -196,4 +210,55 @@ def get_telemetry_summary(db: Session = Depends(get_db)):
                 pressure=min_data[2]
             )
         ]
+    )
+
+@router.get("/telemetry/trend", response_model=TelemetryTrendsOut)
+def get_telemetry_trends(device_id: str | None = None, db: Session = Depends(get_db)):
+    
+    if device_id and not verify_device(device_id, db):
+        raise HTTPException(status_code=404, detail="Device Not Found")
+    
+    # ex. start time: base trends on data from 3 hours ago
+    start_time = datetime.now(timezone.utc) - timedelta(hours=COMPARE_PAST_HOURS)
+    
+    avg_stmt = (
+        select(
+            SensorReads.device,
+            func.avg(SensorReads.temp).label("temp"),
+            func.avg(SensorReads.humidity).label("humidity"),
+            func.avg(SensorReads.pressure).label("pressure")
+        )
+        .where(SensorReads.timestamp >= start_time)
+        .group_by(SensorReads.device)
+    )
+
+    current_stmt = (
+        select(SensorReads.device, SensorReads.temp, SensorReads.humidity, SensorReads.pressure)
+        .distinct(SensorReads.device)
+        .order_by(
+            SensorReads.device,
+            SensorReads.timestamp.desc(),
+            SensorReads.id.desc()
+        )
+    )
+
+    if device_id:
+        avg_stmt = avg_stmt.where(SensorReads.device == device_id)
+        current_stmt = current_stmt.where(SensorReads.device == device_id)
+
+    average_data = db.execute(avg_stmt).all()
+    current_data = db.execute(current_stmt).all()
+
+    current_dict = {
+        row.device: row
+        for row in current_data
+    }
+
+    return TelemetryTrendsOut(
+        data=[TelemetryTrendsList(
+            device=average_row.device,
+            temp=calculate_trend(current_dict.get(average_row.device).temp, average_row.temp),
+            humidity=calculate_trend(current_dict.get(average_row.device).humidity, average_row.humidity),
+            pressure=calculate_trend(current_dict.get(average_row.device).pressure, average_row.pressure)
+        ) for average_row in average_data]
     )
