@@ -30,6 +30,9 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 def verify_device(device_id: str, db) -> bool:
+    """
+    Helper function to verify the current device that is attempted to be queried in the database
+    """
     stmt = (
         select(SensorReads.device)
         .where(SensorReads.device == device_id)
@@ -52,6 +55,7 @@ def calculate_start_end_day() -> tuple[datetime, datetime]:
 def calculate_trend(current: float, average: float) -> TrendEnum:
     """
     Helper function for calculating the enum value for the current trend in telemetry data
+    Returns the customn enum value based on positive/negative/equal comparison
     """
     if current > average:
         return TrendEnum.UP
@@ -260,6 +264,7 @@ def get_telemetry_trends(device_id: str | None = None, db: Session = Depends(get
     average_data = db.execute(avg_stmt).all()
     current_data = db.execute(current_stmt).all()
 
+    # mapping device name to its row; this verifies data and makes data indexing easier
     current_dict = {
         row.device: row
         for row in current_data
@@ -268,7 +273,7 @@ def get_telemetry_trends(device_id: str | None = None, db: Session = Depends(get
     return TelemetryTrendsOut(
         data=[TelemetryTrendsList(
             device=average_row.device,
-            temp=calculate_trend(current_dict.get(average_row.device).temp, average_row.temp),
+            temp=calculate_trend(current_dict.get(average_row.device).temp, average_row.temp), # see helper function for logic
             humidity=calculate_trend(current_dict.get(average_row.device).humidity, average_row.humidity),
             pressure=calculate_trend(current_dict.get(average_row.device).pressure, average_row.pressure)
         ) for average_row in average_data]
