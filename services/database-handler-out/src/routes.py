@@ -8,8 +8,19 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from .database import get_db
-from .models import SensorReads, DiagnosticData, Status
-from .schema import TelemetryOut, TelemetryPoint, TelemetryCurrentOut, NodeResponseOut, NodeResponseList, TelemetrySummaryOut, TelemetrySummaryList, TelemetryTrendsOut, TelemetryTrendsList, TrendEnum
+from .models import SensorReads, DiagnosticData
+from .schema import (
+    TelemetryOut,
+    TelemetryPoint, 
+    TelemetryCurrentOut, 
+    NodeResponseOut, 
+    NodeResponseList, 
+    TelemetrySummaryOut, 
+    TelemetrySummaryList, 
+    TelemetryTrendsOut, 
+    TelemetryTrendsList, 
+    TrendEnum
+)
 
 # variable for how far back the trend data should be compared against /telemetry/trend
 COMPARE_PAST_HOURS = 3
