@@ -1,5 +1,5 @@
 import './App.css'
-import BMEDashboard from './pages/dashboard'
+import BMEDashboard from './pages/DashboardPage'
 
 function App() {
   
