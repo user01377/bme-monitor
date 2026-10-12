@@ -8,7 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from .models import ApiToken
 from .database import get_db
-from .schema import TelemetryOut, TelemetryCurrentOut, NodeResponseOut
+from .schema import TelemetryOut, TelemetryCurrentOut, NodeResponseOut, TelemetrySummaryOut
 
 api_key = APIKeyHeader(name="X-API-Key")
 
@@ -60,6 +60,14 @@ async def get_current_telemetry(device_id: str, client: httpx.AsyncClient = Depe
 @router.get("/nodes", response_model=NodeResponseOut)
 async def get_nodes_diag(device_id: str | None = None, client: httpx.AsyncClient = Depends(get_http_client)):
     response = await client.get("/nodes", params={"device_id": device_id})
+
+    handle_downstream_error(response)
+
+    return response.json()
+
+@router.get("/telemetry/summary", response_model=TelemetrySummaryOut)
+async def get_telemetry_summary(client: httpx.AsyncClient = Depends(get_http_client)):
+    response = await client.get("/telemetry/summary")
 
     handle_downstream_error(response)
 
