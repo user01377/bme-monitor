@@ -2,175 +2,132 @@
 
 > **Internal API**
 >
-> These endpoints are intended for internal communication between the `data-server` and `data-handler-out` service. They are not intended to be exposed directly to external clients.
+> These endpoints are used by `data-server` to retrieve data from `database-handler-out`. They are not intended to be exposed directly to external clients.
+
+Temperature is measured in °F, humidity in %, and pressure in hPa. Daily calculations use the `America/New_York` timezone. Paths are relative to any configured router prefix.
 
 ## `GET /telemetry`
 
-Represents a generic telemetry data GET route for retrieving telemetry data from an ESP32 node.
+Returns one metric for a specified device over the requested time range, ordered from oldest to newest.
 
-A device must be specified when querying telemetry. The `range` query parameter is optional and defaults to returning readings from the past 24 hours.
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `device_id` | `str` | Yes | Device ID. |
+| `metric` | `str` | Yes | `temp`, `humidity`, or `pressure`. |
+| `range` | `int` | No | Hours to look back. Defaults to `24`. |
 
-The route supports retrieving a single telemetry metric: temperature, humidity, or pressure.
-
-### Query Parameters
-
-| Parameter     | Type    | Required | Description                                                          |
-| ------------- | ------- | -------- | -------------------------------------------------------------------- |
-| `device_id` | `str` | Yes      | ID of the ESP32 node to query                                        |
-| `metric`    | `str` | Yes      | Telemetry metric to retrieve:`temp`, `humidity`, or `pressure` |
-| `range`     | `int` | No       | Number of hours of telemetry to retrieve. Defaults to`24`.         |
-
-### Behavior
-
-The route only returns readings belonging to the specified device and whose timestamps fall within the requested time range. Results are ordered chronologically from oldest to newest.
-
-### Responses
-
-**`200 OK`**
-
-Example:
+**Response — `200 OK`**
 
 ```json
 {
   "metric": "temp",
   "data": [
-    {
-      "timestamp": "2026-10-04T18:00:00Z",
-      "value": 72.4
-    },
-    {
-      "timestamp": "2026-10-04T18:10:00Z",
-      "value": 72.6
-    }
+    { "timestamp": "2026-10-11T18:00:00Z", "value": 72.4 },
+    { "timestamp": "2026-10-11T18:10:00Z", "value": 72.6 }
   ]
 }
 ```
 
-**`404 Not Found`**
+**Errors:**
 
-Returned when the specified device does not exist:
-
-```json
-{
-  "detail": "Device Not Found"
-}
-```
-
-Returned when the device exists but has no readings within the requested time period:
-
-```json
-{
-  "detail": "No Readings In Time Period"
-}
-```
-
-**`422 Unprocessable Entity`**
-
-Returned when a required parameter is missing or an invalid value is provided for `metric`.
-
----
+- `404`: `Device Not Found` or `No Readings In Time Period`.
+- `422`: Missing required parameters, unsupported metric, or a non-integer range.
 
 ## `GET /telemetry/current`
 
-Represents a telemetry data query for the most recent reading from an ESP32 node.
+Returns the most recent temperature, humidity, pressure, and timestamp for a specified device.
 
-Returns the most recent temperature, humidity, and pressure readings from the specified device.
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `device_id` | `str` | Yes | Device ID. |
 
-### Query Parameters
-
-| Parameter     | Type    | Required | Description                   |
-| ------------- | ------- | -------- | ----------------------------- |
-| `device_id` | `str` | Yes      | ID of the ESP32 node to query |
-
-### Behavior
-
-The route retrieves the most recent telemetry reading for the specified device based on its timestamp.
-
-### Responses
-
-**`200 OK`**
-
-Example:
+**Response — `200 OK`**
 
 ```json
 {
-  "temperature": 72.4,
+  "temperature": 72.6,
   "humidity": 48.2,
-  "pressure": 1013.2
+  "pressure": 1013.2,
+  "timestamp": "2026-10-11T18:10:00Z"
 }
 ```
 
-**`404 Not Found`**
+**Errors:**
 
-Returned when the specified device does not exist.
-
-```json
-{
-  "detail": "Device Not Found"
-}
-```
-
-**`422 Unprocessable Entity`**
-
-Returned when `device_id` is not provided.
-
----
+- `404`: `Device Not Found` or `No Readings Found`.
+- `422`: Missing `device_id`.
 
 ## `GET /nodes`
 
-Represents diagnostic data for ESP32 nodes.
+Returns the latest diagnostic record for each device and its telemetry reading count for today. Specify `device_id` to retrieve one device.
 
-The `device_id` parameter is optional. When omitted, the route returns the most recent diagnostic record for each device. When specified, it returns the most recent diagnostic record for that device.
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `device_id` | `str` | No | Device ID. Omit to retrieve all devices with diagnostic records. |
 
-### Query Parameters
-
-| Parameter     | Type    | Required | Description                                                                               |
-| ------------- | ------- | -------- | ----------------------------------------------------------------------------------------- |
-| `device_id` | `str` | No       | ID of the ESP32 node to query. When omitted, diagnostic data for all devices is returned. |
-
-### Behavior
-
-The route returns the latest diagnostic record for each device, determined by the most recent timestamp.
-
-When `device_id` is provided, only the latest diagnostic record for that device is returned.
-
-### Responses
-
-**`200 OK`**
-
-Example:
+**Response — `200 OK`**
 
 ```json
 {
   "data": [
     {
-      "device": "esp32-01",
-      "timestamp": "2026-10-04T18:00:00Z",
+      "device": "vn-001",
+      "readings": 85,
+      "timestamp": "2026-10-11T18:10:00Z",
       "rssi": -48,
       "uptime": 86400,
       "reset": "power_on"
-    },
-    {
-      "device": "esp32-02",
-      "timestamp": "2026-10-04T17:55:00Z",
-      "rssi": -62,
-      "uptime": 604800,
-      "reset": "software"
     }
   ]
 }
 ```
 
-**`404 Not Found`**
+`rssi` is measured in dBm and `uptime` in seconds. `readings` defaults to `0` when the device has no telemetry readings today. No matching diagnostics returns `200 OK` with an empty `data` array.
 
-When a `device_id` is provided but the device does not exist:
+**Errors:**
+
+- `404`: `Device Not Found` when the specified device has no telemetry records.
+
+## `GET /telemetry/summary`
+
+Returns today's averages, highs, and lows across telemetry readings from all devices. No query parameters are required or supported.
+
+**Response — `200 OK`**
 
 ```json
 {
-  "detail": "Device Not Found"
+  "data": [
+    { "reading": "avg", "temp": 72.4, "humidity": 48.2, "pressure": 1013.2 },
+    { "reading": "high", "temp": 75.1, "humidity": 53.6, "pressure": 1015.4 },
+    { "reading": "low", "temp": 69.8, "humidity": 43.9, "pressure": 1010.7 }
+  ]
 }
 ```
 
-**`422 Unprocessable Entity`**
+**Errors:**
 
-Not applicable when `device_id` is omitted, since it is an optional parameter.
+- `404`: `No Readings Today` when no telemetry readings exist today.
+
+## `GET /telemetry/trend`
+
+Compares each device's latest temperature, humidity, and pressure with its averages over the past three hours, configured by `COMPARE_PAST_HOURS`.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `device_id` | `str` | No | Device ID. Omit to retrieve all devices with recent readings. |
+
+**Response — `200 OK`**
+
+Returns a `data` array containing `device`, `temp`, `humidity`, and `pressure`. Each metric contains a trend value defined by `TrendEnum`:
+
+| Comparison | Enum member |
+| --- | --- |
+| Latest value above average | `UP` |
+| Latest value below average | `DOWN` |
+| Latest value equal to average | `NEUTRAL` |
+
+The exact serialized values are defined in `schema.py`. Devices without readings in the comparison window are omitted. No matching readings returns `200 OK` with an empty `data` array.
+
+**Errors:**
+
+- `404`: `Device Not Found` when the specified device has no telemetry records.
