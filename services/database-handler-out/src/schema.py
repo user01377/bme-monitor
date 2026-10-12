@@ -8,11 +8,6 @@ class TrendEnum(str, Enum):
     DOWN = "down"
     NEUTRAL = "neutral"
 
-class AvgDataOut(BaseModel):
-    temperature: float
-    humidity: float
-    pressure: float
-
 class TelemetryPoint(BaseModel):
     timestamp: datetime
     value: float
