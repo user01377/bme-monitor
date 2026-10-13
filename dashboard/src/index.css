@@ -1,13 +1,17 @@
 :root {
-  /* background color styles */
-  --bg-day: rgb(98,193,229);
-  --bg-night: rgb(25,20,55);
+  --bg-day: rgb(98, 193, 229);
+  --bg-night: rgb(25, 20, 55);
 
-  /* text styles */
-  --text-primary: rgba(255, 255, 255, 1);
-  --text-secondary: rgba(255, 255, 255, 0.75);
-  --text-muted: rgba(255, 255, 255, 0.6);
-  --text-subtle: rgba(255, 255, 255, 0.45); 
+  --text-primary: #ffffff;
+
+  --glass-bg: rgba(255, 255, 255, 0.10);
+  --glass-border: rgba(255, 255, 255, 0.30);
+  --glass-shadow: rgba(25, 20, 55, 0.15);
+
+  --accent-day: #d1eefa;
+  /* need to get accent nightiime */
+
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 html, body {
