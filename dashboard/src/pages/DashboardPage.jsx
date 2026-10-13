@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getTelemetry, getCurrentTelemetry, getNodes } from "../utils/telemetry"
+import { getTelemetry, getCurrentTelemetry, getNodes, getCurrentTrends } from "../utils/telemetry"
 import CurrentTelemetryCard from "../components/CurrentTelemetryCard";
 
 export default function BMEDashboard() {
@@ -10,6 +10,10 @@ export default function BMEDashboard() {
     const [currentTelemetry, setCurrentTelemetry] = useState(null);
     const [currentLoading, setCurrentLoading] = useState(true);
     const [currentError, setCurrentError] = useState(null);
+
+    const [telemetryTrends, setTelemetryTrends] = useState(null);
+    const [telemetryTrendsLoading, setTelemetryTrendsLoading] = useState(true);
+    const [telemetryTrendsError, setTelemetryTrendsError] = useState(null);
 
     const [nodes, setNodes] = useState(null);
     const [nodesLoading, setNodesLoading] = useState(true);
@@ -45,7 +49,20 @@ export default function BMEDashboard() {
             }
         }
 
+        async function fetchCurrentTelemetryTrends() {
+            try {
+                // temporary hard coded query params
+                const data = await getCurrentTrends("esp32-01");
+                setTelemetryTrends(data);
+            } catch (error) {
+                setTelemetryTrendsError(error.message);
+            } finally {
+                setTelemetryTrendsLoading(false);
+            }
+        }
+        
         fetchCurrentTelemetry();
+        fetchCurrentTelemetryTrends();
     }, []);
 
     useEffect(() => {
@@ -67,7 +84,7 @@ export default function BMEDashboard() {
     return (
         <main id="bme-dashboard">
             <div id="dashboard-wrapper">
-                <CurrentTelemetryCard room="test-room" data={currentTelemetry} />
+                <CurrentTelemetryCard device="test-device" data={currentTelemetry} trend={telemetryTrends} />
             </div>
         </main>
     );
