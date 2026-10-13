@@ -3,6 +3,12 @@ from datetime import datetime
 from pydantic import BaseModel
 from enum import Enum
 
+class Status(str, Enum):
+    VALID = "valid_reading"
+    AUTOFLAGGED = "automatically_flagged"
+    MANUAL_INC = "manually_included"
+    MANUAL_EXC = "manually_excluded"
+
 class TrendEnum(str, Enum):
     UP = "up"
     DOWN = "down"
