@@ -19,7 +19,8 @@ from .schema import (
     TelemetrySummaryList, 
     TelemetryTrendsOut, 
     TelemetryTrendsList, 
-    TrendEnum
+    TrendEnum,
+    Status
 )
 
 # variable for how far back the trend data should be compared against /telemetry/trend
@@ -88,6 +89,8 @@ def get_telemetry(device_id: str, metric: Literal["temp", "humidity", "pressure"
         .order_by(SensorReads.timestamp)
     )
 
+    stmt = stmt.where(SensorReads.status.in_([Status.VALID, Status.MANUAL_INC]))
+
     data = db.execute(stmt).all()
 
     if (len(data) == 0):
@@ -110,6 +113,8 @@ def get_current_data(device_id: str, db: Session = Depends(get_db)):
         .order_by(SensorReads.timestamp.desc())
         .limit(1)
     )
+
+    stmt = stmt.where(SensorReads.status.in_([Status.VALID, Status.MANUAL_INC]))
 
     data = db.execute(stmt).one_or_none()
 
@@ -198,6 +203,10 @@ def get_telemetry_summary(db: Session = Depends(get_db)):
         )
     )
 
+    avg_stmt = avg_stmt.where(SensorReads.status.in_([Status.VALID, Status.MANUAL_INC]))
+    max_stmt = max_stmt.where(SensorReads.status.in_([Status.VALID, Status.MANUAL_INC]))
+    min_stmt = min_stmt.where(SensorReads.status.in_([Status.VALID, Status.MANUAL_INC]))
+
     avg_data = db.execute(avg_stmt).one();
     max_data = db.execute(max_stmt).one();
     min_data = db.execute(min_stmt).one();
@@ -261,6 +270,9 @@ def get_telemetry_trends(device_id: str | None = None, db: Session = Depends(get
     if device_id:
         avg_stmt = avg_stmt.where(SensorReads.device == device_id)
         current_stmt = current_stmt.where(SensorReads.device == device_id)
+
+    avg_stmt = avg_stmt.where(SensorReads.status.in_([Status.VALID, Status.MANUAL_INC]))
+    current_stmt = current_stmt.where(SensorReads.status.in_([Status.VALID, Status.MANUAL_INC]))
 
     average_data = db.execute(avg_stmt).all()
     current_data = db.execute(current_stmt).all()
