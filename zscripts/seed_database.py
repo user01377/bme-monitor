@@ -32,6 +32,7 @@ def seed():
     try:
         
         readings = [
+            # !!! TEST DATA FOR PYTESTS !!!
 
             # SHOULD APPEAR: 30 minutes ago, esp32-01, VALID
             SensorReads(
@@ -154,6 +155,94 @@ def seed():
                 status=Status.VALID,
                 timestamp=datetime.datetime.now(datetime.UTC)
                 - datetime.timedelta(days=2),
+            ),
+            
+            # !!! TEST DATA FOR TESTING THE FRONTEND ROUTES !!!
+            SensorReads(
+                device="vn-001",
+                temp=22,
+                humidity=51,
+                pressure=1012,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+            ),
+
+            SensorReads(
+                device="vn-001",
+                temp=22.1,
+                humidity=51.7,
+                pressure=1012.2,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+                - datetime.timedelta(hours=1),
+            ),
+
+            SensorReads(
+                device="vn-001",
+                temp=23,
+                humidity=54.7,
+                pressure=1013.2,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+                - datetime.timedelta(hours=2),
+            ),
+
+            SensorReads(
+                device="jw-001",
+                temp=22,
+                humidity=51,
+                pressure=1012,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+            ),
+
+            SensorReads(
+                device="jw-001",
+                temp=22.1,
+                humidity=51.7,
+                pressure=1012.2,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+                - datetime.timedelta(hours=1),
+            ),
+
+            SensorReads(
+                device="jw-001",
+                temp=23,
+                humidity=54.7,
+                pressure=1013.2,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+                - datetime.timedelta(hours=2),
+            ),
+
+            SensorReads(
+                device="er-001",
+                temp=22,
+                humidity=51,
+                pressure=1012,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+            ),
+
+            SensorReads(
+                device="er-001",
+                temp=22.1,
+                humidity=51.7,
+                pressure=1012.2,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+                - datetime.timedelta(hours=1),
+            ),
+
+            SensorReads(
+                device="er-001",
+                temp=23,
+                humidity=54.7,
+                pressure=1013.2,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+                - datetime.timedelta(hours=2),
             ),
         ]
 
