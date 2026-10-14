@@ -20,6 +20,8 @@ export default function BMEDashboard() {
     const [nodesLoading, setNodesLoading] = useState(true);
     const [nodesError, setNodesError] = useState(null);
 
+    const DEVICE_IDS = ["vn-001", "er-001", "jw-001"]
+
     // calls the getTelemetry helper to get data from /telemetry route
     useEffect(() => {
         async function fetchTelemetry() {
@@ -41,7 +43,10 @@ export default function BMEDashboard() {
         async function fetchCurrentTelemetry() {
             try {
                 // temporary hard coded query params
-                const data = await getCurrentTelemetry("esp32-01");
+                const data = await Promise.all(
+                    DEVICE_IDS.map(device => getCurrentTelemetry(device))
+                );
+
                 setCurrentTelemetry(data);
             } catch (error) {
                 setCurrentError(error.message);
@@ -53,7 +58,10 @@ export default function BMEDashboard() {
         async function fetchCurrentTelemetryTrends() {
             try {
                 // temporary hard coded query params
-                const data = await getCurrentTrends("esp32-01");
+                const data = await Promise.all(
+                    DEVICE_IDS.map(device => getCurrentTrends(device))
+                );
+
                 setTelemetryTrends(data);
             } catch (error) {
                 setTelemetryTrendsError(error.message);
@@ -99,10 +107,19 @@ export default function BMEDashboard() {
                         <p>Latest environmental readings from each sensor</p>
                     </div>
                 </header>
-                <section style={{display: "flex", gap: "30px"}}>
-                    <CurrentTelemetryCard device="vn-001" data={currentTelemetry} trend={telemetryTrends} />
-                    <CurrentTelemetryCard device="jw-001" data={currentTelemetry} trend={telemetryTrends} />
-                    <CurrentTelemetryCard device="er-001" data={currentTelemetry} trend={telemetryTrends} />
+                <section className="telemetry-cards">
+                    {/* if loading, display loading */}
+                    {(currentLoading || telemetryTrendsLoading) ? (
+                        <p>Loading telemetry...</p>
+
+                        // if not loading, check for error. if error, display error message. if no error, display cards.
+                    ) : (currentError || telemetryTrendsError) ? (
+                        <p>Error: {currentError || telemetryTrendsError}</p>
+                    ) : (
+                        DEVICE_IDS.map((device, index) => (
+                            <CurrentTelemetryCard device={device} data={currentTelemetry[index]} trend={telemetryTrends[index]}/>
+                        ))
+                    )}
                 </section>
 
             </div>
