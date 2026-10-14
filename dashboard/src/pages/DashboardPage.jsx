@@ -1,3 +1,4 @@
+import "../styles/DashboardPage.css";
 import { useEffect, useState } from "react";
 import { getTelemetry, getCurrentTelemetry, getNodes, getCurrentTrends } from "../utils/telemetry"
 import CurrentTelemetryCard from "../components/CurrentTelemetryCard";
@@ -84,7 +85,26 @@ export default function BMEDashboard() {
     return (
         <main id="bme-dashboard">
             <div id="dashboard-wrapper">
-                <CurrentTelemetryCard device="test-device" data={currentTelemetry} trend={telemetryTrends} />
+                
+                <header className="dashboard-header">
+                    <div className="dashboard-header-info">
+                        <h1>BME Dashboard</h1>
+                        <p>Environmental Monitoring System</p>
+                    </div>
+                </header>
+
+                <header className="section-header">
+                    <div>
+                        <h2>Current Telemetry</h2>
+                        <p>Latest environmental readings from each sensor</p>
+                    </div>
+                </header>
+                <section style={{display: "flex", gap: "30px"}}>
+                    <CurrentTelemetryCard device="vn-001" data={currentTelemetry} trend={telemetryTrends} />
+                    <CurrentTelemetryCard device="jw-001" data={currentTelemetry} trend={telemetryTrends} />
+                    <CurrentTelemetryCard device="er-001" data={currentTelemetry} trend={telemetryTrends} />
+                </section>
+
             </div>
         </main>
     );
