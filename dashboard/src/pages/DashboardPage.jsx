@@ -2,6 +2,7 @@ import "../styles/DashboardPage.css";
 import { useEffect, useState } from "react";
 import { getTelemetry, getCurrentTelemetry, getNodes, getCurrentTrends } from "../utils/telemetry"
 import CurrentTelemetryCard from "../components/CurrentTelemetryCard";
+import TelemetryGraph from "../components/TelemetryGraph";
 
 export default function BMEDashboard() {
     const [telemetry, setTelemetry] = useState(null);
@@ -20,14 +21,19 @@ export default function BMEDashboard() {
     const [nodesLoading, setNodesLoading] = useState(true);
     const [nodesError, setNodesError] = useState(null);
 
-    const DEVICE_IDS = ["vn-001", "er-001", "jw-001"]
+    const DEVICE_IDS = ["vn-001", "er-001", "jw-001"];
+    const METRICS = ["temp", "humidity", "pressure"];
+    const TELEMETRY_LEN = 24
 
     // calls the getTelemetry helper to get data from /telemetry route
     useEffect(() => {
         async function fetchTelemetry() {
             try {
-                // temporary hard coded query params
-                const data = await getTelemetry("esp32-01", "temp", 24);
+                // eventually make the metric variable, fetch every xyz refreshes and use different 
+                const data = await Promise.all(
+                    DEVICE_IDS.map(device => getTelemetry(device, "temp", TELEMETRY_LEN))
+                );
+
                 setTelemetry(data);
             } catch (error) {
                 setTelemetryError(error.message);
@@ -42,7 +48,6 @@ export default function BMEDashboard() {
     useEffect(() => {
         async function fetchCurrentTelemetry() {
             try {
-                // temporary hard coded query params
                 const data = await Promise.all(
                     DEVICE_IDS.map(device => getCurrentTelemetry(device))
                 );
@@ -57,7 +62,6 @@ export default function BMEDashboard() {
 
         async function fetchCurrentTelemetryTrends() {
             try {
-                // temporary hard coded query params
                 const data = await Promise.all(
                     DEVICE_IDS.map(device => getCurrentTrends(device))
                 );
@@ -77,7 +81,6 @@ export default function BMEDashboard() {
     useEffect(() => {
         async function fetchNodes() {
             try {
-                // temporary hard coded query params
                 const data = await getNodes();
                 setNodes(data);
             } catch (error) {
@@ -122,7 +125,7 @@ export default function BMEDashboard() {
                         )}
                     </div>
                 </section>
-                        
+                
             </div>
         </main>
     );
