@@ -67,8 +67,7 @@
     font-size: 0.9rem;
 }
 
-.telemetry-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+.telemetry-cards {
+    display: flex;
     gap: 20px;
 }
