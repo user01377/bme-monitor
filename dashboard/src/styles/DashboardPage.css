@@ -1,0 +1,74 @@
+#bme-dashboard {
+    box-sizing: border-box;
+    min-height: 100vh;
+    padding: 40px 40px;
+
+    background: var(--bg-night);
+    color: var(--text-primary);
+}
+
+#dashboard-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    margin-bottom: 65px;
+    padding-bottom: 24px;
+
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.dashboard-header h1 {
+    margin: 0;
+
+    font-size: 2.4rem;
+    font-weight: 600;
+    letter-spacing: -0.75px;
+}
+
+.dashboard-header p {
+    margin: 8px 0 0;
+
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+}
+
+.telemetry-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.dashboard-section {
+    margin-bottom: 40px;
+}
+
+.section-header {
+    margin-bottom: 20px;
+}
+
+.section-header h2 {
+    margin: 0;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+}
+
+.section-header p {
+    margin: 6px 0 0;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+.telemetry-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
