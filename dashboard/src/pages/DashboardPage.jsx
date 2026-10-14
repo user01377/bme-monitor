@@ -101,27 +101,28 @@ export default function BMEDashboard() {
                     </div>
                 </header>
 
-                <header className="section-header">
-                    <div>
+                <section className="dashboard-section glass-panel">
+                    <header className="section-header">
                         <h2>Current Telemetry</h2>
                         <p>Latest environmental readings from each sensor</p>
-                    </div>
-                </header>
-                <section className="telemetry-cards">
-                    {/* if loading, display loading */}
-                    {(currentLoading || telemetryTrendsLoading) ? (
-                        <p>Loading telemetry...</p>
+                    </header>
+
+                    <div className="telemetry-cards">
+                        {/* if loading, display loading */}
+                        {(currentLoading || telemetryTrendsLoading) ? (
+                            <p>Loading telemetry...</p>
 
                         // if not loading, check for error. if error, display error message. if no error, display cards.
-                    ) : (currentError || telemetryTrendsError) ? (
-                        <p>Error: {currentError || telemetryTrendsError}</p>
-                    ) : (
-                        DEVICE_IDS.map((device, index) => (
-                            <CurrentTelemetryCard device={device} data={currentTelemetry[index]} trend={telemetryTrends[index]}/>
-                        ))
-                    )}
+                        ) : (currentError || telemetryTrendsError) ? (
+                            <p>Error: {currentError || telemetryTrendsError}</p>
+                        ) : (
+                            DEVICE_IDS.map((device, index) => (
+                                <CurrentTelemetryCard device={device} data={currentTelemetry[index]} trend={telemetryTrends[index]}/>
+                            ))
+                        )}
+                    </div>
                 </section>
-
+                        
             </div>
         </main>
     );
