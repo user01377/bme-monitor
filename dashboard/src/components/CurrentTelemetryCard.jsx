@@ -33,7 +33,6 @@ export default function CurrentTelemetryCard({device, data, trend}) {
         <article className="telemetry-card">
 
           <header className="telemetry-card__header">
-            {/* <span className="telemetry-card__label">Current telemetry</span> */}
             <h2>{device}</h2>
           </header>
       
