@@ -1,4 +1,5 @@
 import "../styles/CurrentTelemetryCard.css";
+import { convertISO } from "../utils/convertISO";
 
 function mapTrend(trend) {
     // helper function to convert string to unicode arrows, will use svgs in future
@@ -9,13 +10,6 @@ function mapTrend(trend) {
     } else {
         return "→";
     }
-}
-
-function convertISO(ISO) {
-    const date = new Date(ISO);
-    const converted = date.toLocaleString();
-
-    return converted;
 }
 
 export default function CurrentTelemetryCard({device, data, trend}) {
