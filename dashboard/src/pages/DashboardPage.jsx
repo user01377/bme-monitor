@@ -4,6 +4,7 @@ import { getTelemetry, getCurrentTelemetry, getNodes, getCurrentTrends, getTelem
 import CurrentTelemetryCard from "../components/CurrentTelemetryCard";
 import TelemetryGraph from "../components/TelemetryGraph";
 import TelemetrySummary from "../components/TelemetrySummary";
+import NodeDiagnosticCard from "../components/NodeDiagnosticCard";
 
 function formatDate(date) {
     return date.toLocaleDateString([], {
@@ -198,6 +199,24 @@ export default function BMEDashboard() {
                             <p>Error: {telemetrySummaryError}</p>
                        ) : (
                             <TelemetrySummary data={telemetrySummary} />
+                       )}
+                    </div>
+                </section>
+
+                <section className="dashboard-section glass-panel">
+                    <header className="section-header">
+                       <h2>Node Diagnostics</h2>
+                    </header>
+                    
+                    <div className="node-cards">
+                       {(nodesLoading) ? (
+                            <p>Loading summary...</p>
+                       ) : (nodesError) ? (
+                            <p>Error: {nodesError}</p>
+                       ) : (
+                            nodes.data.map(node => (
+                                <NodeDiagnosticCard key={node.device} data={node} />
+                            ))
                        )}
                     </div>
                 </section>
