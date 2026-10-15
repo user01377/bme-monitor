@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { getTelemetry, getCurrentTelemetry, getNodes, getCurrentTrends, getTelemetrySummary } from "../utils/telemetry"
 import CurrentTelemetryCard from "../components/CurrentTelemetryCard";
 import TelemetryGraph from "../components/TelemetryGraph";
+import TelemetrySummary from "../components/TelemetrySummary";
 
 function formatDate(date) {
     return date.toLocaleDateString([], {
@@ -181,6 +182,22 @@ export default function BMEDashboard() {
                             <p>Error: {telemetryError}</p>
                        ) : (
                             <TelemetryGraph dataList={telemetry} range={TELEMETRY_LEN} />
+                       )}
+                    </div>
+                </section>
+
+                <section className="dashboard-section glass-panel">
+                    <header className="section-header">
+                       <h2>Today's Summary · All Rooms</h2>
+                    </header>
+
+                    <div>
+                       {(telemetrySummaryLoading) ? (
+                            <p>Loading summary...</p>
+                       ) : (telemetrySummaryError) ? (
+                            <p>Error: {telemetrySummaryError}</p>
+                       ) : (
+                            <TelemetrySummary data={telemetrySummary} />
                        )}
                     </div>
                 </section>
