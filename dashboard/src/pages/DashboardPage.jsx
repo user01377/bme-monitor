@@ -1,6 +1,6 @@
 import "../styles/DashboardPage.css";
 import { useEffect, useState } from "react";
-import { getTelemetry, getCurrentTelemetry, getNodes, getCurrentTrends } from "../utils/telemetry"
+import { getTelemetry, getCurrentTelemetry, getNodes, getCurrentTrends, getTelemetrySummary } from "../utils/telemetry"
 import CurrentTelemetryCard from "../components/CurrentTelemetryCard";
 import TelemetryGraph from "../components/TelemetryGraph";
 
@@ -25,6 +25,10 @@ export default function BMEDashboard() {
     const [telemetryTrends, setTelemetryTrends] = useState(null);
     const [telemetryTrendsLoading, setTelemetryTrendsLoading] = useState(true);
     const [telemetryTrendsError, setTelemetryTrendsError] = useState(null);
+
+    const [telemetrySummary, setTelemetrySummary] = useState(null);
+    const [telemetrySummaryLoading, setTelemetrySummaryLoading] = useState(true);
+    const [telemetrySummaryError, setTelemetrySummaryError] = useState(null);
 
     const [nodes, setNodes] = useState(null);
     const [nodesLoading, setNodesLoading] = useState(true);
@@ -91,6 +95,22 @@ export default function BMEDashboard() {
         
         fetchCurrentTelemetry();
         fetchCurrentTelemetryTrends();
+    }, []);
+
+    useEffect(() => {
+        async function fetchTelemetrySummary() {
+            try {
+                const data = await getTelemetrySummary();
+
+                setTelemetrySummary(data);
+            } catch (error) {
+                setTelemetrySummaryError(error.message);
+            } finally {
+                setTelemetrySummaryLoading(false);
+            }
+        }
+
+        fetchTelemetrySummary();
     }, []);
 
     useEffect(() => {
