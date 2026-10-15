@@ -65,3 +65,13 @@ export async function getCurrentTrends(device_id) {
     
     return response.json();
 }
+
+export async function getTelemetrySummary() {
+    const response = await fetch(`${API_URL}/api/telemetry/summary`);
+
+    if (!response.ok) {
+        throw new Error(`Failed to fetch telemetry summary: ${response.status}`);
+    }
+
+    return response.json();
+}
