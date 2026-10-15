@@ -35,7 +35,7 @@
     background: var(--glass-border);
 }
 
-.telemetry-card h2 {
+.telemetry-card h3 {
     margin: 0;
     
     color: var(--text-primary);
