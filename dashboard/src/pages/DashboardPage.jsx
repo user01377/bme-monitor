@@ -4,7 +4,16 @@ import { getTelemetry, getCurrentTelemetry, getNodes, getCurrentTrends } from ".
 import CurrentTelemetryCard from "../components/CurrentTelemetryCard";
 import TelemetryGraph from "../components/TelemetryGraph";
 
+function formatDate(date) {
+    return date.toLocaleDateString([], {
+        month: "short",
+        day: "numeric",
+    });
+}
+
 export default function BMEDashboard() {
+
+    // USE STATE HOOKS
     const [telemetry, setTelemetry] = useState(null);
     const [telemetryLoading, setTelemetryLoading] = useState(true);
     const [telemetryError, setTelemetryError] = useState(null);
@@ -21,9 +30,15 @@ export default function BMEDashboard() {
     const [nodesLoading, setNodesLoading] = useState(true);
     const [nodesError, setNodesError] = useState(null);
 
+    // DASHBOARD CONSTANTS
     const DEVICE_IDS = ["vn-001", "er-001", "jw-001"];
     const METRICS = ["temp", "humidity", "pressure"];
     const TELEMETRY_LEN = 24
+
+    const endTime = new Date();
+    const startTime = new Date(
+        endTime.getTime() - TELEMETRY_LEN * 60 * 60 * 1000
+    );
 
     // calls the getTelemetry helper to get data from /telemetry route
     useEffect(() => {
@@ -120,12 +135,35 @@ export default function BMEDashboard() {
                             <p>Error: {currentError || telemetryTrendsError}</p>
                         ) : (
                             DEVICE_IDS.map((device, index) => (
-                                <CurrentTelemetryCard device={device} data={currentTelemetry[index]} trend={telemetryTrends[index]}/>
+                                <CurrentTelemetryCard key={device} device={device} data={currentTelemetry[index]} trend={telemetryTrends[index]}/>
                             ))
                         )}
                     </div>
                 </section>
-                
+
+                <section className="dashboard-section glass-panel">
+                    <header className="section-header">
+                        {(telemetryLoading) ? (
+                                <p>Loading Title...</p>
+                        ) : (telemetryError) ? (
+                                <p>Error: {telemetryError}</p>
+                        ) : (
+                            <h2 style={{ textTransform: "capitalize" }}>{telemetry[0].metric === "temp" ? "Temperature" : telemetry[0].metric} Trends</h2>
+                        )}
+
+                        <p>Past {TELEMETRY_LEN} hours · {formatDate(startTime)}–{formatDate(endTime)}</p>
+                    </header>
+
+                    <div>
+                       {(telemetryLoading) ? (
+                            <p>Loading graph...</p>
+                       ) : (telemetryError) ? (
+                            <p>Error: {telemetryError}</p>
+                       ) : (
+                            <TelemetryGraph dataList={telemetry} range={TELEMETRY_LEN} />
+                       )}
+                    </div>
+                </section>
             </div>
         </main>
     );
