@@ -11,12 +11,6 @@ const METRICS = {
     pressure: { label: "Pressure", unit: "hPa" },
 };
 
-function formatTime(timestamp) {
-    return new Date(timestamp).toLocaleTimeString([], {
-        hour: "numeric",
-    });
-}
-
 export default function TelemetryGraph({dataList, range}) {
     if (!dataList) {
         return <p>Loading...</p>
