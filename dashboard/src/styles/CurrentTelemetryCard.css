@@ -87,7 +87,7 @@
 .telemetry-card__footer {
     margin-top: 14px;
 
-    color: var(--text-muted);
+    color: var(--text-primary);
     font-size: 0.75rem;
     line-height: 1.5;
     overflow-wrap: anywhere;
