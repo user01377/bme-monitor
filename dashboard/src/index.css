@@ -1,3 +1,8 @@
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    display: none;
+}
+
 :root {
   --bg-day: rgb(98, 193, 229);
   --bg-night: rgb(25, 20, 55);
