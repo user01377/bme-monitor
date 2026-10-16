@@ -24,17 +24,17 @@ export default function TelemetrySummary({data}) {
 
                         <div className="telemetry-summary__reading">
                             <span className="telemetry-summary__label">Temperature</span>
-                            <span className="telemetry-summary__value">{data.temp.toFixed(0)}<small>°F</small></span>
+                            <span className="telemetry-summary__value">{data.temp.toFixed(1)}<small>°F</small></span>
                         </div>
     
                         <div className="telemetry-summary__reading">
                             <span className="telemetry-summary__label">Humidity</span>
-                            <span className="telemetry-summary__value">{data.humidity.toFixed(0)}<small> %</small></span>
+                            <span className="telemetry-summary__value">{data.humidity.toFixed(1)}<small> %</small></span>
                         </div>
     
                         <div className="telemetry-summary__reading">
                             <span className="telemetry-summary__label">Pressure</span>
-                            <span className="telemetry-summary__value">{data.pressure.toFixed(0)}<small> hPa</small></span>
+                            <span className="telemetry-summary__value">{data.pressure.toFixed(1)}<small> hPa</small></span>
                         </div>
 
                     </div>
