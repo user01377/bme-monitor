@@ -2,8 +2,8 @@ import "../styles/TelemetryGraph.css";
 import { Line } from "react-chartjs-2";
 import  "chart.js/auto";
 
-const DEVICE_IDS = ["vn-001", "er-001", "jw-001"];
-const COLORS = ["#C2B280", "#A95C68", "#a78bfa"];
+const DEVICE_IDS = ["er-001", "jw-001", "vn-001"];
+const COLORS = ["#A95C68", "#a78bfa", "#C2B280"];
 
 const METRICS = {
     temp: {label: "Temperature", unit: "°F", smoothing: 5,},
