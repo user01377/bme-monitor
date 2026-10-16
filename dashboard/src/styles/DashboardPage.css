@@ -1,7 +1,7 @@
 #bme-dashboard {
     box-sizing: border-box;
     min-height: 100vh;
-    padding: 35px 40px;
+    padding: 45px 40px;
 
     background: var(--bg-night);
     color: var(--text-primary);
@@ -14,7 +14,7 @@
 
 /* REUSED STYLES */
 .glass-panel {
-    padding: 20px;
+    padding: 25px 20px;
 
     background: rgba(255, 255, 255, 0.04);
     backdrop-filter: blur(12px);
@@ -38,18 +38,21 @@
     border-bottom: 1px solid var(--glass-border);
 }
 
-.dashboard-header h1 {
-    margin: 0;
+.dashboard-header__info h1 {
+    margin: 0 0 6px;
 
-    font-size: 2.4rem;
-    font-weight: 600;
-    letter-spacing: -0.75px;
+    font-size: 2rem;
+    font-weight: 650;
+    letter-spacing: -0.8px;
+    line-height: 1.15;
+
+    color: var(--text-primary);
 }
 
-.dashboard-header p {
-    margin: 8px 0 0;
+.dashboard-header__info p {
+    margin: 0;
 
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: var(--text-secondary);
 }
 
@@ -60,7 +63,7 @@
 }
 
 .dashboard-section {
-    margin-bottom: 20px;
+    margin-bottom: 26px;
 }
 
 .section-header {
