@@ -94,6 +94,9 @@ export default function TelemetryGraph({dataList, range}) {
                 title: {
                     display: false,
                 },
+                grid: {
+                    color: "rgba(255, 255, 255, 0.15)",
+                },
             },
             y: {
                 title: {
@@ -109,7 +112,10 @@ export default function TelemetryGraph({dataList, range}) {
                         size: 13
                     },
                     color: "rgba(255, 255, 255, 0.8)"
-                }
+                },
+                grid: {
+                    color: "rgba(255, 255, 255, 0.15)",
+                },
             },
         },
         plugins: {
