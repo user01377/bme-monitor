@@ -37,7 +37,7 @@ export default function BMEDashboard() {
     const [nodesError, setNodesError] = useState(null);
 
     // DASHBOARD CONSTANTS
-    const DEVICE_IDS = ["vn-001", "er-001", "jw-001"];
+    const DEVICE_IDS = ["er-001", "jw-001", "vn-001"];
     const METRICS = ["temp", "humidity", "pressure"];
     const TELEMETRY_LEN = 24
 
@@ -135,9 +135,9 @@ export default function BMEDashboard() {
             <div id="dashboard-wrapper">
                 
                 <header className="dashboard-header">
-                    <div className="dashboard-header-info">
-                        <h1>BME Dashboard</h1>
-                        <p>Environmental Monitoring System</p>
+                    <div className="dashboard-header__info">
+                        <h1>Telemetry Dashboard</h1>
+                        <p>Displaying room conditions and sensor diagnostics</p>
                     </div>
                 </header>
 
