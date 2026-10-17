@@ -33,15 +33,22 @@ jobs:
           docker pull ghcr.io/user01377/bme-database-migration:${{ github.event.workflow_run.head_sha }}
       
       - name: Update Repository
+        working-directory: /home/macser/bme-monitor
         run: |
           git fetch origin
           git reset --hard origin/main
-          
-        working-directory: /home/macser/bme-monitor
       
-      - name: Restart Containers
+      - name: Rebuild React Frontend
+        working-directory: /home/macser/bme-monitor/dashboard
+        run: |
+          cd dashboard
+          npm run build
+      
+      - name: Deploy Containers
+        env:
+          SHA: ${{ github.event.workflow_run.head_sha }} 
         run: |
           docker compose down --remove-orphans
-          SHA=${{ github.event.workflow_run.head_sha }} docker compose up -d
+          docker compose up -d --build --quiet-build
 
         working-directory: /home/macser/bme-monitor
