@@ -6,6 +6,19 @@ import TelemetryGraph from "../components/TelemetryGraph";
 import TelemetrySummary from "../components/TelemetrySummary";
 import NodeDiagnosticCard from "../components/NodeDiagnosticCard";
 
+// DASHBOARD CONSTANTS
+const DEVICE_IDS = ["er-001", "jw-001", "vn-001"];
+const METRICS = ["temp", "humidity", "pressure"];
+const TELEMETRY_LEN = 24
+
+const endTime = new Date();
+const startTime = new Date(
+    endTime.getTime() - TELEMETRY_LEN * 60 * 60 * 1000
+);
+
+const BUILD_VERSION = import.meta.env.VITE_BUILD_VERSION;
+const VERSION_CHECK_INTERVAL = 300 * 1000;
+
 function formatDate(date) {
     return date.toLocaleDateString([], {
         timeZone: "America/New_York",
@@ -37,15 +50,38 @@ export default function BMEDashboard() {
     const [nodesLoading, setNodesLoading] = useState(true);
     const [nodesError, setNodesError] = useState(null);
 
-    // DASHBOARD CONSTANTS
-    const DEVICE_IDS = ["er-001", "jw-001", "vn-001"];
-    const METRICS = ["temp", "humidity", "pressure"];
-    const TELEMETRY_LEN = 24
+    useEffect(() => {
+        async function checkVersion() {
+            console.log("CHECKING VERSION...");
 
-    const endTime = new Date();
-    const startTime = new Date(
-        endTime.getTime() - TELEMETRY_LEN * 60 * 60 * 1000
-    );
+            try {
+                const response = await fetch("/version.json", {cache: "no-store"});
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+              
+                const { version } = await response.json();
+                  
+                if (version !== BUILD_VERSION) {
+                    console.log(
+                        `Version mismatch: ${BUILD_VERSION} -> ${version}`
+                    );
+                    
+                    window.location.reload();
+                }
+
+            } catch (error) {
+                console.error("Failed to check dashboard version:", error);
+            }
+        }
+
+        checkVersion();
+
+        const interval = setInterval(checkVersion, VERSION_CHECK_INTERVAL);
+
+        return () => clearInterval(interval);
+    }, []);
 
     // calls the getTelemetry helper to get data from /telemetry route
     useEffect(() => {
