@@ -5,7 +5,7 @@ from src.main import app
 
 client = TestClient(app)
 
-def test_summary_valid(seeded_db):
+def test_summary_valid(seeded_summary_db):
     response = client.get("/telemetry/summary")
 
     body = response.json()
