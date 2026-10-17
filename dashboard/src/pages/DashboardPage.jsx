@@ -8,6 +8,7 @@ import NodeDiagnosticCard from "../components/NodeDiagnosticCard";
 
 function formatDate(date) {
     return date.toLocaleDateString([], {
+        timeZone: "America/New_York",
         month: "short",
         day: "numeric",
     });
