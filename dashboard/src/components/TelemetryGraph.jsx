@@ -87,6 +87,7 @@ export default function TelemetryGraph({dataList, range}) {
                     padding: 10,
                     callback: value =>
                         new Date(value).toLocaleTimeString([], {
+                            timeZone: "America/New_York",
                             hour: "numeric",
                             hour12: true,
                         }),
