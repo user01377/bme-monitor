@@ -24,7 +24,7 @@ export default function BMEDasdhboard() {
         queryKey: ["currentTelemetry"],
         queryFn: () => 
             Promise.all(DEVICE_IDS.map(device => getCurrentTelemetry(device))),
-        refetchInterval: 60_000
+        refetchInterval: 60_000 // 1 min to refresh
     });
 
     // telemetryTrends query
@@ -47,7 +47,7 @@ export default function BMEDasdhboard() {
     } = useQuery({
         queryKey: ["telemetrySummary"],
         queryFn: getTelemetrySummary,
-        refetchInterval: 60_000
+        refetchInterval: 300_000 // 5 mins to refresh summary
     });
 
     // nodes query
@@ -58,7 +58,7 @@ export default function BMEDasdhboard() {
     } = useQuery({
         queryKey: ["nodes"],
         queryFn: () => getNodes(),
-        refetchInterval: 60_000
+        refetchInterval: 60_000 // 1 min to refresh
     });
 
     // hook to check if frontend version is stale, force refresh to get new code if stale

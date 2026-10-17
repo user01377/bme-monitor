@@ -15,8 +15,8 @@ const METRICS = {
 };
 
 const TELEMETRY_LEN = 24;
-const ROTATION_INTERVAL = 3_000;
-const REFRESH_INTERVAL = 60_000;
+const ROTATION_INTERVAL = 30_000; // every 30 seconds rotate graph displayed
+const REFRESH_INTERVAL = 300_000; // every 5 mins refresh data
 
 const METRIC_KEYS = Object.keys(METRICS);
 
