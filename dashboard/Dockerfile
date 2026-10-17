@@ -8,9 +8,9 @@ RUN npm ci
 COPY . .
 
 ARG VERSION=dev
+ENV VITE_BUILD_VERSION=${VERSION}
 
-RUN printf 'export const BUILD_VERSION = "%s";\n' "$VERSION" > src/buildVersion.js \
-    && printf '{"version":"%s"}\n' "$VERSION" > public/version.json \
+RUN printf '{"version":"%s"}\n' "$VERSION" > public/version.json \
     && npm run build
 
 FROM nginx:alpine
