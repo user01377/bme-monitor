@@ -114,7 +114,18 @@ services:
     depends_on:
       data-server-migration:
         condition: service_completed_successfully
-
+  
+  frontend:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      API_KEY: ${API_KEY}
+    depends_on:
+      - data-server
         
 volumes:
   postgres_data:
