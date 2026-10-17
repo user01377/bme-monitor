@@ -116,7 +116,9 @@ services:
         condition: service_completed_successfully
   
   frontend:
-    image: "ghcr.io/user01377/bme-frontend:${SHA:-prod}"
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
     restart: unless-stopped
     ports:
       - "8080:80"
