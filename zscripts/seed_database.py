@@ -32,6 +32,7 @@ def seed():
     try:
         
         readings = [
+            # !!! TEST DATA FOR PYTESTS !!!
 
             # SHOULD APPEAR: 30 minutes ago, esp32-01, VALID
             SensorReads(
@@ -155,6 +156,184 @@ def seed():
                 timestamp=datetime.datetime.now(datetime.UTC)
                 - datetime.timedelta(days=2),
             ),
+            
+            # !!! TEST DATA FOR TESTING THE FRONTEND ROUTES !!!
+            SensorReads(
+                device="vn-001",
+                temp=22,
+                humidity=51,
+                pressure=1012,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+            ),
+
+            SensorReads(
+                device="vn-001",
+                temp=22.1,
+                humidity=51.7,
+                pressure=1012.2,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+                - datetime.timedelta(hours=1),
+            ),
+
+            SensorReads(
+                device="vn-001",
+                temp=23,
+                humidity=54.7,
+                pressure=1013.2,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+                - datetime.timedelta(hours=2),
+            ),
+
+            SensorReads(
+                device="vn-001",
+                temp=55,
+                humidity=54.7,
+                pressure=1013.2,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+                - datetime.timedelta(hours=10),
+            ),
+
+            SensorReads(
+                device="vn-001",
+                temp=60,
+                humidity=54.7,
+                pressure=1013.2,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+                - datetime.timedelta(hours=16),
+            ),
+
+            SensorReads(
+                device="vn-001",
+                temp=90,
+                humidity=54.7,
+                pressure=1013.2,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+                - datetime.timedelta(hours=23),
+            ),
+
+            SensorReads(
+                device="jw-001",
+                temp=22,
+                humidity=51,
+                pressure=1012,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+            ),
+
+            SensorReads(
+                device="jw-001",
+                temp=22.1,
+                humidity=51.7,
+                pressure=1012.2,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+                - datetime.timedelta(hours=1),
+            ),
+
+            SensorReads(
+                device="jw-001",
+                temp=23,
+                humidity=54.7,
+                pressure=1013.2,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+                - datetime.timedelta(hours=2),
+            ),
+
+            SensorReads(
+                device="jw-001",
+                temp=23,
+                humidity=54.7,
+                pressure=1013.2,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+                - datetime.timedelta(hours=8),
+            ),
+
+            SensorReads(
+                device="jw-001",
+                temp=71,
+                humidity=54.7,
+                pressure=1013.2,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+                - datetime.timedelta(hours=10),
+            ),
+
+            SensorReads(
+                device="jw-001",
+                temp=90,
+                humidity=54.7,
+                pressure=1013.2,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+                - datetime.timedelta(hours=16),
+            ),
+
+            SensorReads(
+                device="er-001",
+                temp=22,
+                humidity=51,
+                pressure=1012,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+            ),
+
+            SensorReads(
+                device="er-001",
+                temp=22.1,
+                humidity=51.7,
+                pressure=1012.2,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+                - datetime.timedelta(hours=1),
+            ),
+
+            SensorReads(
+                device="er-001",
+                temp=23,
+                humidity=54.7,
+                pressure=1013.2,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+                - datetime.timedelta(hours=2),
+            ),
+
+            SensorReads(
+                device="er-001",
+                temp=55,
+                humidity=54.7,
+                pressure=1013.2,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+                - datetime.timedelta(hours=4),
+            ),
+
+            SensorReads(
+                device="er-001",
+                temp=41,
+                humidity=54.7,
+                pressure=1013.2,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+                - datetime.timedelta(hours=6),
+            ),
+
+            SensorReads(
+                device="er-001",
+                temp=90,
+                humidity=54.7,
+                pressure=1013.2,
+                status=Status.VALID,
+                timestamp=datetime.datetime.now(datetime.UTC)
+                - datetime.timedelta(hours=8),
+            ),
         ]
 
         diag_data = [
@@ -194,6 +373,30 @@ def seed():
                 timestamp=datetime.datetime.now(datetime.UTC)
                 - datetime.timedelta(days=2),
             ),
+            # DIAGNOSTIC DATA FOR FRONTEND TESTING
+        #     DiagnosticData(
+        #         device="vn-001",
+        #         rssi=-65,
+        #         uptime=512,
+        #         reset="none",
+        #         timestamp=datetime.datetime.now(datetime.UTC)
+        #     ),
+            
+        #     DiagnosticData(
+        #         device="jw-001",
+        #         rssi=-65,
+        #         uptime=123,
+        #         reset="software",
+        #         timestamp=datetime.datetime.now(datetime.UTC)
+        #     ),
+            
+        #     DiagnosticData(
+        #         device="er-001",
+        #         rssi=-65,
+        #         uptime=33,
+        #         reset="reset",
+        #         timestamp=datetime.datetime.now(datetime.UTC)
+        #     ),
         ]
 
         db.add_all(diag_data)

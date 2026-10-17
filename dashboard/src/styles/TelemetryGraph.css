@@ -1,0 +1,22 @@
+.telemetry-graph {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    padding: 24px;
+
+    color: var(--text-primary);
+    background: var(--glass-bg);
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    box-shadow: 0 8px 24px var(--glass-shadow);
+}
+
+.telemetry-graph__chart {
+    position: relative;
+    height: 350px;
+    min-width: 0;
+}

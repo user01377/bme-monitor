@@ -1,11 +1,10 @@
-import './App.css'
-import BMEDashboard from './pages/dashboard'
+import './App.css';
+import BMEDashboard from './pages/DashboardPage';
 
 function App() {
-  
-  return (
-    BMEDashboard()
-  )
+    return (
+        <BMEDashboard />
+    );
 }
 
-export default App
+export default App;
