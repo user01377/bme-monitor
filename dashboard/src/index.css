@@ -1,28 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap');
+
+:root {
+    --bg-day: rgb(98, 193, 229);
+    --bg-night: rgb(25, 20, 55);
+
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.75);
+    --text-muted: rgba(255, 255, 255, 0.55);
+
+    --glass-bg: rgba(255, 255, 255, 0.10);
+    --glass-border: rgba(255, 255, 255, 0.30);
+    --glass-shadow: rgba(25, 20, 55, 0.15);
+
+    --accent-day: #d1eefa;
+    --accent-night: #b9d9ff;
+
+    --font-heading: "Montserrat", sans-serif;
+    --font-body: "Inter", sans-serif;
+
+    font-family: var(--font-body);
+    font-weight: 400;
+    color: var(--text-primary);
+    font-synthesis: none;
+    -webkit-font-smoothing: antialiased;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg-night);
+}
+
 html::-webkit-scrollbar,
 body::-webkit-scrollbar {
     display: none;
 }
 
-:root {
-  --bg-day: rgb(98, 193, 229);
-  --bg-night: rgb(25, 20, 55);
-
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.65);
-  --text-muted: rgba(255, 255, 255, .65);
-
-  --glass-bg: rgba(255, 255, 255, 0.10);
-  --glass-border: rgba(255, 255, 255, 0.30);
-  --glass-shadow: rgba(25, 20, 55, 0.15);
-
-  --accent-day: #d1eefa;
-  /* need to get accent nightiime */
-
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+h1, h2, h3, p {
+    margin-top: 0;
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  background-color: black;
+h1, h2, h3 {
+    font-family: var(--font-heading);
+    line-height: 1.3;
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    letter-spacing: -0.035em;
+}
+
+h2 {
+    font-size: 1.375rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+}
+
+h3 {
+    font-size: 1.125rem;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+}
+
+p {
+    font-size: 0.9375rem;
+    line-height: 1.6;
 }
