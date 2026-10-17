@@ -130,6 +130,8 @@ services:
     build:
       context: ./dashboard
       dockerfile: Dockerfile
+      args:
+        VERSION: ${SHA:-dev}
     ports:
       - "8080:80"
     environment:
