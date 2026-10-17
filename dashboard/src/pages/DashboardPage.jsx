@@ -11,7 +11,7 @@ import NodeDiagnosticCard from "../components/NodeDiagnosticCard";
 const DEVICE_IDS = ["er-001", "jw-001", "vn-001"];
 
 const BUILD_VERSION = import.meta.env.VITE_BUILD_VERSION;
-const VERSION_CHECK_INTERVAL = 300 * 1000; // first num is seconds
+const VERSION_CHECK_INTERVAL = 300_000; // time is seconds == every 5 mins
 
 export default function BMEDasdhboard() {
 
@@ -21,7 +21,7 @@ export default function BMEDasdhboard() {
         isPending: currentLoading,
         error: currentError,
     } = useQuery({
-        queryKey: ["currentTelemetry"],
+        queryKey: ["currentTelemetry", DEVICE_IDS],
         queryFn: () => 
             Promise.all(DEVICE_IDS.map(device => getCurrentTelemetry(device))),
         refetchInterval: 60_000 // 1 min to refresh
@@ -33,7 +33,7 @@ export default function BMEDasdhboard() {
         isPending: telemetryTrendsLoading,
         error: telemetryTrendsError,
     } = useQuery({
-        queryKey: ["telemetryTrends"],
+        queryKey: ["telemetryTrends", DEVICE_IDS],
         queryFn: () => 
             Promise.all(DEVICE_IDS.map(device => getCurrentTrends(device))),
         refetchInterval: 60_000
