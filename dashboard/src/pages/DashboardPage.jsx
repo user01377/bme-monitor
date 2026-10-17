@@ -1,7 +1,7 @@
 import "../styles/DashboardPage.css";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { getTelemetry, getCurrentTelemetry, getNodes, getCurrentTrends, getTelemetrySummary } from "../utils/telemetry"
+import { getCurrentTelemetry, getNodes, getCurrentTrends, getTelemetrySummary } from "../utils/telemetry"
 import CurrentTelemetryCard from "../components/CurrentTelemetryCard";
 import TelemetryGraph from "../components/TelemetryGraph";
 import TelemetrySummary from "../components/TelemetrySummary";
@@ -9,38 +9,11 @@ import NodeDiagnosticCard from "../components/NodeDiagnosticCard";
 
 // DASHBOARD CONSTANTS
 const DEVICE_IDS = ["er-001", "jw-001", "vn-001"];
-const METRICS = ["temp", "humidity", "pressure"];
-const TELEMETRY_LEN = 24
-
-const endTime = new Date();
-const startTime = new Date(
-    endTime.getTime() - TELEMETRY_LEN * 60 * 60 * 1000
-);
 
 const BUILD_VERSION = import.meta.env.VITE_BUILD_VERSION;
 const VERSION_CHECK_INTERVAL = 300 * 1000; // first num is seconds
 
-function formatDate(date) {
-    return date.toLocaleDateString([], {
-        timeZone: "America/New_York",
-        month: "short",
-        day: "numeric",
-    });
-}
-
 export default function BMEDasdhboard() {
-
-    // telemetry query
-    const {
-        data: telemetry,
-        isPending: telemetryLoading,
-        error: telemetryError,
-    } = useQuery({
-        queryKey: ["telemetry"],
-        queryFn: () => 
-            Promise.all(DEVICE_IDS.map(device => getTelemetry(device, "temp", TELEMETRY_LEN))),
-        refetchInterval: 60_000
-    });
 
     // currentTelemetry query
     const {
@@ -156,27 +129,7 @@ export default function BMEDasdhboard() {
                 </section>
 
                 <section className="dashboard-section glass-panel">
-                    <header className="section-header">
-                        {(telemetryLoading) ? (
-                                <p>Loading Title...</p>
-                        ) : (telemetryError) ? (
-                                <p>Error: {(telemetryError).message}</p>
-                        ) : (
-                            <h2 style={{ textTransform: "capitalize" }}>{telemetry[0].metric === "temp" ? "Temperature" : telemetry[0].metric} Trends</h2>
-                        )}
-
-                        <p>Past {TELEMETRY_LEN} hours · {formatDate(startTime)}–{formatDate(endTime)}</p>
-                    </header>
-
-                    <div>
-                       {(telemetryLoading) ? (
-                            <p>Loading graph...</p>
-                       ) : (telemetryError) ? (
-                            <p>Error: {(telemetryError).message}</p>
-                       ) : (
-                            <TelemetryGraph dataList={telemetry} range={TELEMETRY_LEN} />
-                       )}
-                    </div>
+                        <TelemetryGraph />
                 </section>
 
                 <section className="dashboard-section glass-panel">
