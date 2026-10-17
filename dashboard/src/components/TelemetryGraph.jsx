@@ -1,6 +1,9 @@
 import "../styles/TelemetryGraph.css";
 import { Line } from "react-chartjs-2";
 import  "chart.js/auto";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getTelemetry } from "../utils/telemetry";
 
 const DEVICE_IDS = ["er-001", "jw-001", "vn-001"];
 const COLORS = ["#A95C68", "#a78bfa", "#C2B280"];
@@ -10,6 +13,20 @@ const METRICS = {
     humidity: {label: "Humidity", unit: "%", smoothing: 4,},
     pressure: {label: "Pressure", unit: "hPa", smoothing: 1},
 };
+
+const TELEMETRY_LEN = 24;
+const ROTATION_INTERVAL = 30_000; // every 30 seconds rotate graph displayed
+const REFRESH_INTERVAL = 300_000; // every 5 mins refresh data
+
+const METRIC_KEYS = Object.keys(METRICS);
+
+function formatDate(timestamp) {
+    return new Date(timestamp).toLocaleDateString([], {
+        timeZone: "America/New_York",
+        month: "short",
+        day: "numeric",
+    });
+}
 
 function movingAverage(data, windowSize = 3) {
     return data.map((point, index) => {
@@ -27,16 +44,42 @@ function movingAverage(data, windowSize = 3) {
     });
 }
 
-export default function TelemetryGraph({dataList, range}) {
-    if (!dataList) {
-        return <p>Loading...</p>
-    }
+export default function TelemetryGraph() {
+    const [metricIndex, setMetricIndex] = useState(0);
 
-    const metric = METRICS[dataList[0].metric];
+    const currentMetric = METRIC_KEYS[metricIndex];
+    const metric = METRICS[currentMetric];
+
+    // rotate graph every 15 seconds
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setMetricIndex(prev => (prev + 1) % METRIC_KEYS.length);
+        }, ROTATION_INTERVAL);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    // Fetch telemetry for the current metric
+    const {
+        data: dataList,
+        isPending: telemetryLoading,
+        error: telemetryError,
+        dataUpdatedAt,
+    } = useQuery({
+        queryKey: ["telemetry", currentMetric, TELEMETRY_LEN, DEVICE_IDS],
+        queryFn: () =>
+            Promise.all(
+                DEVICE_IDS.map(device =>
+                    getTelemetry(device, currentMetric, TELEMETRY_LEN)
+                )
+            ),
+        refetchInterval: REFRESH_INTERVAL,
+        staleTime: REFRESH_INTERVAL,
+    });
 
     const chartData = {
-        datasets: dataList.map((response, index) => {
-            const rawData = response.data
+        datasets: (dataList ?? []).map((response, index) => {
+            const rawData = (response.data ?? [])
                 .map(point => ({
                     x: new Date(point.timestamp).getTime(),
                     y: point.value,
@@ -56,8 +99,8 @@ export default function TelemetryGraph({dataList, range}) {
         }),
     };
 
-    const endTime = Date.now();
-    const startTime = endTime - range * 60 * 60 * 1000;
+    const endTime = dataUpdatedAt || Date.now();
+    const startTime = endTime - TELEMETRY_LEN * 60 * 60 * 1000;
 
     const options = {
         responsive: true,
@@ -146,10 +189,39 @@ export default function TelemetryGraph({dataList, range}) {
     };
 
     return (
-        <section className="telemetry-graph">
-            <div className="telemetry-graph__chart">
-                <Line data={chartData} options={options} />
-            </div>
-        </section>
-    )
+        <>
+            <header className="section-header">
+                <h2>{metric.label} Trends</h2>
+    
+                <p>
+                    Past {TELEMETRY_LEN} hours ·{" "}
+                    {formatDate(startTime)}–{formatDate(endTime)}
+                </p>
+            </header>
+    
+            <section className="telemetry-graph">
+                <div className="telemetry-graph__chart">
+                    {telemetryLoading ? (
+                        <p className="telemetry-graph__loading">
+                            Loading graph...
+                        </p>
+                    ) : telemetryError && !dataList ? (
+                        <p className="telemetry-graph__loading">
+                            Error: {telemetryError.message}
+                        </p>
+                    ) : !dataList?.length ? (
+                        <p className="telemetry-graph__loading">
+                            No telemetry available.
+                        </p>
+                    ) : (
+                        <Line
+                            data={chartData}
+                            options={options}
+                            updateMode="none"
+                        />
+                    )}
+                </div>
+            </section>
+        </>
+    );
 }

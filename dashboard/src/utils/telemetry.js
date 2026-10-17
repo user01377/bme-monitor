@@ -34,9 +34,9 @@ export async function getNodes(device_id) {
     let url = `${API_URL}/api/nodes`;
 
     if (device_id) {
-    const params = new URLSearchParams({ device_id });
-    
-    url += `?${params}`;
+        const params = new URLSearchParams({ device_id });
+        
+        url += `?${params}`;
     }
 
     const response = await fetch(url);

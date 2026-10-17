@@ -1,6 +1,7 @@
 import "../styles/DashboardPage.css";
-import { useEffect, useState } from "react";
-import { getTelemetry, getCurrentTelemetry, getNodes, getCurrentTrends, getTelemetrySummary } from "../utils/telemetry"
+import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { getCurrentTelemetry, getNodes, getCurrentTrends, getTelemetrySummary } from "../utils/telemetry"
 import CurrentTelemetryCard from "../components/CurrentTelemetryCard";
 import TelemetryGraph from "../components/TelemetryGraph";
 import TelemetrySummary from "../components/TelemetrySummary";
@@ -8,48 +9,59 @@ import NodeDiagnosticCard from "../components/NodeDiagnosticCard";
 
 // DASHBOARD CONSTANTS
 const DEVICE_IDS = ["er-001", "jw-001", "vn-001"];
-const METRICS = ["temp", "humidity", "pressure"];
-const TELEMETRY_LEN = 24
-
-const endTime = new Date();
-const startTime = new Date(
-    endTime.getTime() - TELEMETRY_LEN * 60 * 60 * 1000
-);
 
 const BUILD_VERSION = import.meta.env.VITE_BUILD_VERSION;
-const VERSION_CHECK_INTERVAL = 300 * 1000;
+const VERSION_CHECK_INTERVAL = 300_000; // time is seconds == every 5 mins
 
-function formatDate(date) {
-    return date.toLocaleDateString([], {
-        timeZone: "America/New_York",
-        month: "short",
-        day: "numeric",
+export default function BMEDasdhboard() {
+
+    // currentTelemetry query
+    const {
+        data: currentTelemetry,
+        isPending: currentLoading,
+        error: currentError,
+    } = useQuery({
+        queryKey: ["currentTelemetry", DEVICE_IDS],
+        queryFn: () => 
+            Promise.all(DEVICE_IDS.map(device => getCurrentTelemetry(device))),
+        refetchInterval: 60_000 // 1 min to refresh
     });
-}
 
-export default function BMEDashboard() {
+    // telemetryTrends query
+    const {
+        data: telemetryTrends,
+        isPending: telemetryTrendsLoading,
+        error: telemetryTrendsError,
+    } = useQuery({
+        queryKey: ["telemetryTrends", DEVICE_IDS],
+        queryFn: () => 
+            Promise.all(DEVICE_IDS.map(device => getCurrentTrends(device))),
+        refetchInterval: 60_000
+    });
 
-    // USE STATE HOOKS
-    const [telemetry, setTelemetry] = useState(null);
-    const [telemetryLoading, setTelemetryLoading] = useState(true);
-    const [telemetryError, setTelemetryError] = useState(null);
+    // telemetrySummary query
+    const {
+        data: telemetrySummary,
+        isPending: telemetrySummaryLoading,
+        error: telemetrySummaryError,
+    } = useQuery({
+        queryKey: ["telemetrySummary"],
+        queryFn: getTelemetrySummary,
+        refetchInterval: 300_000 // 5 mins to refresh summary
+    });
 
-    const [currentTelemetry, setCurrentTelemetry] = useState(null);
-    const [currentLoading, setCurrentLoading] = useState(true);
-    const [currentError, setCurrentError] = useState(null);
+    // nodes query
+    const {
+        data: nodes,
+        isPending: nodesLoading,
+        error: nodesError,
+    } = useQuery({
+        queryKey: ["nodes"],
+        queryFn: () => getNodes(),
+        refetchInterval: 60_000 // 1 min to refresh
+    });
 
-    const [telemetryTrends, setTelemetryTrends] = useState(null);
-    const [telemetryTrendsLoading, setTelemetryTrendsLoading] = useState(true);
-    const [telemetryTrendsError, setTelemetryTrendsError] = useState(null);
-
-    const [telemetrySummary, setTelemetrySummary] = useState(null);
-    const [telemetrySummaryLoading, setTelemetrySummaryLoading] = useState(true);
-    const [telemetrySummaryError, setTelemetrySummaryError] = useState(null);
-
-    const [nodes, setNodes] = useState(null);
-    const [nodesLoading, setNodesLoading] = useState(true);
-    const [nodesError, setNodesError] = useState(null);
-
+    // hook to check if frontend version is stale, force refresh to get new code if stale
     useEffect(() => {
         async function checkVersion() {
             console.log("CHECKING VERSION...");
@@ -83,90 +95,6 @@ export default function BMEDashboard() {
         return () => clearInterval(interval);
     }, []);
 
-    // calls the getTelemetry helper to get data from /telemetry route
-    useEffect(() => {
-        async function fetchTelemetry() {
-            try {
-                // eventually make the metric variable, fetch every xyz refreshes and use different 
-                const data = await Promise.all(
-                    DEVICE_IDS.map(device => getTelemetry(device, "temp", TELEMETRY_LEN))
-                );
-
-                setTelemetry(data);
-            } catch (error) {
-                setTelemetryError(error.message);
-            } finally {
-                setTelemetryLoading(false);
-            }
-        }
-
-        fetchTelemetry();
-    }, []);
-
-    useEffect(() => {
-        async function fetchCurrentTelemetry() {
-            try {
-                const data = await Promise.all(
-                    DEVICE_IDS.map(device => getCurrentTelemetry(device))
-                );
-
-                setCurrentTelemetry(data);
-            } catch (error) {
-                setCurrentError(error.message);
-            } finally {
-                setCurrentLoading(false);
-            }
-        }
-
-        async function fetchCurrentTelemetryTrends() {
-            try {
-                const data = await Promise.all(
-                    DEVICE_IDS.map(device => getCurrentTrends(device))
-                );
-
-                setTelemetryTrends(data);
-            } catch (error) {
-                setTelemetryTrendsError(error.message);
-            } finally {
-                setTelemetryTrendsLoading(false);
-            }
-        }
-        
-        fetchCurrentTelemetry();
-        fetchCurrentTelemetryTrends();
-    }, []);
-
-    useEffect(() => {
-        async function fetchTelemetrySummary() {
-            try {
-                const data = await getTelemetrySummary();
-
-                setTelemetrySummary(data);
-            } catch (error) {
-                setTelemetrySummaryError(error.message);
-            } finally {
-                setTelemetrySummaryLoading(false);
-            }
-        }
-
-        fetchTelemetrySummary();
-    }, []);
-
-    useEffect(() => {
-        async function fetchNodes() {
-            try {
-                const data = await getNodes();
-                setNodes(data);
-            } catch (error) {
-                setNodesError(error.message);
-            } finally {
-                setNodesLoading(false);
-            }
-        }
-
-        fetchNodes();
-    }, []);
-
     return (
         <main id="bme-dashboard">
             <div id="dashboard-wrapper">
@@ -191,7 +119,7 @@ export default function BMEDashboard() {
 
                         // if not loading, check for error. if error, display error message. if no error, display cards.
                         ) : (currentError || telemetryTrendsError) ? (
-                            <p>Error: {currentError || telemetryTrendsError}</p>
+                            <p>Error: {(currentError || telemetryTrendsError).message}</p>
                         ) : (
                             DEVICE_IDS.map((device, index) => (
                                 <CurrentTelemetryCard key={device} device={device} data={currentTelemetry[index]} trend={telemetryTrends[index]}/>
@@ -201,27 +129,7 @@ export default function BMEDashboard() {
                 </section>
 
                 <section className="dashboard-section glass-panel">
-                    <header className="section-header">
-                        {(telemetryLoading) ? (
-                                <p>Loading Title...</p>
-                        ) : (telemetryError) ? (
-                                <p>Error: {telemetryError}</p>
-                        ) : (
-                            <h2 style={{ textTransform: "capitalize" }}>{telemetry[0].metric === "temp" ? "Temperature" : telemetry[0].metric} Trends</h2>
-                        )}
-
-                        <p>Past {TELEMETRY_LEN} hours · {formatDate(startTime)}–{formatDate(endTime)}</p>
-                    </header>
-
-                    <div>
-                       {(telemetryLoading) ? (
-                            <p>Loading graph...</p>
-                       ) : (telemetryError) ? (
-                            <p>Error: {telemetryError}</p>
-                       ) : (
-                            <TelemetryGraph dataList={telemetry} range={TELEMETRY_LEN} />
-                       )}
-                    </div>
+                        <TelemetryGraph />
                 </section>
 
                 <section className="dashboard-section glass-panel">
@@ -233,7 +141,7 @@ export default function BMEDashboard() {
                        {(telemetrySummaryLoading) ? (
                             <p>Loading summary...</p>
                        ) : (telemetrySummaryError) ? (
-                            <p>Error: {telemetrySummaryError}</p>
+                            <p>Error: {(telemetrySummaryError).message}</p>
                        ) : (
                             <TelemetrySummary data={telemetrySummary} />
                        )}
@@ -249,7 +157,7 @@ export default function BMEDashboard() {
                        {(nodesLoading) ? (
                             <p>Loading summary...</p>
                        ) : (nodesError) ? (
-                            <p>Error: {nodesError}</p>
+                            <p>Error: {(nodesError).message}</p>
                        ) : (
                             nodes.data.map(node => (
                                 <NodeDiagnosticCard key={node.device} data={node} />

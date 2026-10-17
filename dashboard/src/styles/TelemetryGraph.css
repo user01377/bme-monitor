@@ -17,6 +17,7 @@
 
 .telemetry-graph__chart {
     position: relative;
+    width: 100%;
     height: 350px;
     min-width: 0;
 }
