@@ -41,7 +41,6 @@ jobs:
       - name: Rebuild React Frontend
         working-directory: /home/macser/bme-monitor/dashboard
         run: |
-          cd dashboard
           npm run build
       
       - name: Deploy Containers
