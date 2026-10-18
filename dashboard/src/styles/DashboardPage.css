@@ -3,7 +3,7 @@
     min-height: 100vh;
     padding: 45px 40px;
 
-    background: var(--bg-night);
+    background: var(--bg-primary);
     color: var(--text-primary);
 }
 
