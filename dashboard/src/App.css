@@ -1,3 +1,7 @@
-h1 {
-    color: var(--text-primary);
+.theme-night {
+    --bg-primary: var(--bg-night);
+}
+
+.theme-day {
+    --bg-primary: var(--bg-day);
 }
