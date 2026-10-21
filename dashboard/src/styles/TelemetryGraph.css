@@ -5,7 +5,7 @@
     padding: 24px;
 
     color: var(--text-primary);
-    background: var(--glass-bg);
+    background: var(--glass-bg-card);
 
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
