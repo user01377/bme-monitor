@@ -8,11 +8,9 @@
     --text-secondary: rgba(255, 255, 255, 0.75);
     --text-muted: rgba(255, 255, 255, 0.55);
 
-    --glass-bg: rgba(255, 255, 255, 0.10);
-    --glass-border: rgba(255, 255, 255, 0.30);
+    --glass-bg: rgba(255, 255, 255, 0.04);
     --glass-shadow: rgba(25, 20, 55, 0.15);
 
-    --accent-day: #d1eefa;
     --accent-night: #b9d9ff;
 
     --font-heading: "Montserrat", sans-serif;
