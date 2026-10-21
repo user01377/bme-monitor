@@ -79,7 +79,9 @@
 }
 
 .telemetry-card__trend {
-    color: var(--accent-day);
+    display: inline-block;
+    color: #fff;
+    text-shadow: 0 0 6px rgba(255, 255, 255);
     font-size: 1.2rem;
     font-weight: 600;
 }
