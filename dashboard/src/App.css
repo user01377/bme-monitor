@@ -6,6 +6,7 @@
     --text-muted: rgba(255,255,255,0.5);
 
     --glass-bg: rgba(255, 255, 255, 0.06);
+    --glass-bg-card: rgba(255, 255, 255, 0.13);
     --glass-border: rgba(255, 255, 255, .04);
     --glass-shadow: rgba(0, 0, 0, 0.20);
 
@@ -16,10 +17,11 @@
     --bg-primary: rgb(65, 180, 250);
 
     --text-primary: #fff;
-    --text-secondary: rgba(255,255,255,0.7);
+    --text-secondary: rgba(255,255,255,0.9);
     --text-muted: rgba(255,255,255,0.5);
 
     --glass-bg: rgba(255, 255, 255, 0.06);
+    --glass-bg-card: rgba(255, 255, 255, 0.18);
     --glass-border: rgba(255, 255, 255, .04);
     --glass-shadow: rgba(0, 0, 0, 0.20);
 
