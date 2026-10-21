@@ -1,4 +1,6 @@
 .theme-night {
+    background: var(--bg-primary);
+    
     --bg-primary: rgb(25, 20, 55);
 
     --text-primary: #fff;
@@ -14,6 +16,8 @@
 }
 
 .theme-day {
+    background: var(--bg-primary);
+
     --bg-primary: rgb(65, 180, 250);
 
     --text-primary: #fff;

@@ -1,9 +1,10 @@
 #bme-dashboard {
+    position: relative;
+    
     box-sizing: border-box;
     min-height: 100vh;
     padding: 45px 40px;
 
-    background: var(--bg-primary);
     color: var(--text-primary);
 }
 
