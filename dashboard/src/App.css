@@ -1,7 +1,27 @@
 .theme-night {
-    --bg-primary: var(--bg-night);
+    --bg-primary: rgb(25, 20, 55);
+
+    --text-primary: #fff;
+    --text-secondary: rgba(255,255,255,0.7);
+    --text-muted: rgba(255,255,255,0.5);
+
+    --glass-bg: rgba(255, 255, 255, 0.06);
+    --glass-border: rgba(255, 255, 255, .04);
+    --glass-shadow: rgba(0, 0, 0, 0.20);
+
+    --accent-divider: rgba(255, 255, 255, .8);
 }
 
 .theme-day {
-    --bg-primary: var(--bg-day);
+    --bg-primary: rgb(65, 180, 250);
+
+    --text-primary: #fff;
+    --text-secondary: rgba(255,255,255,0.7);
+    --text-muted: rgba(255,255,255,0.5);
+
+    --glass-bg: rgba(255, 255, 255, 0.06);
+    --glass-border: rgba(255, 255, 255, .04);
+    --glass-shadow: rgba(0, 0, 0, 0.20);
+
+    --accent-divider: rgba(255, 255, 255, .75);
 }
