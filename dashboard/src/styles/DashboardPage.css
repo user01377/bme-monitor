@@ -14,16 +14,19 @@
 
 /* REUSED STYLES */
 .glass-panel {
+    position: relative;
+
     padding: 25px 20px;
 
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--glass-bg);
+
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
 
-    border: 1px solid rgba(255, 255, 255, 0.10);
+    border: 1px solid var(--glass-border);
     border-radius: 22px;
 
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 25px var(--glass-shadow);
 }
 
 .dashboard-header {
@@ -35,7 +38,7 @@
     margin-bottom: 24px;
     padding-bottom: 24px;
 
-    border-bottom: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--accent-divider);
 }
 
 .dashboard-header__info h1 {
@@ -72,7 +75,7 @@
 
 .section-header h2 {
     margin: 0;
-    color: white;
+    color: var(--text-primary);
     font-size: 1.5rem;
     font-weight: 600;
     letter-spacing: -0.4px;
@@ -80,7 +83,7 @@
 
 .section-header p {
     margin: 6px 0 0;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
     font-size: 0.9rem;
 }
 
