@@ -2,6 +2,7 @@ import './App.css';
 import { useState, useEffect } from 'react';
 import BMEDashboard from './pages/DashboardPage';
 import NightTexture from './textures/NightTexture';
+import DayTexture from './textures/DayTexture';
 import { isNight } from './utils/CheckNight';
 
 const CHECK_NIGHT_INTERVAL = 60_000; // time is seconds * 1000, so 1 minute
@@ -19,7 +20,7 @@ function App() {
 
     return (
         <div className={night ? "theme-night" : "theme-day"}>
-            {night && <NightTexture />}
+            {night ? <NightTexture /> : <DayTexture />}
             <BMEDashboard />
         </div>
     );
