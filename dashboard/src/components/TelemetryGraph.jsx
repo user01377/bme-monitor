@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getTelemetry } from "../utils/telemetry";
 
 const DEVICE_IDS = ["er-001", "jw-001", "vn-001"];
-const COLORS = ["#A95C68", "#a78bfa", "#C2B280"];
+const COLORS = ["#FFE08A", "#FFA2B7", "#C4F59D"];
 
 const METRICS = {
     temp: {label: "Temperature", unit: "°F", smoothing: 5,},
@@ -91,7 +91,7 @@ export default function TelemetryGraph() {
                 data: movingAverage(rawData, metric.smoothing),
                 borderColor: COLORS[index],
                 backgroundColor: COLORS[index],
-                borderWidth: 2,
+                borderWidth: 3,
                 pointRadius: 0,
                 pointHoverRadius: 4,
                 cubicInterpolationMode: "monotone",

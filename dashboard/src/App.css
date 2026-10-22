@@ -1,3 +1,39 @@
-h1 {
-    color: var(--text-primary);
+.theme-night {
+    background: var(--bg-primary);
+    
+    --bg-primary: rgb(25, 20, 55);
+
+    --text-primary: #fff;
+    --text-secondary: rgba(255,255,255,0.7);
+    --text-muted: rgba(255,255,255,0.5);
+
+    --glass-bg: rgba(255, 255, 255, 0.06);
+    --glass-bg-card: rgba(255, 255, 255, 0.13);
+    --glass-border: rgba(255, 255, 255, .04);
+    --glass-shadow: rgba(0, 0, 0, 0.20);
+
+    --status-online: #4ade80;
+    --status-offline: #f87171;
+
+    --accent-divider: rgba(255, 255, 255, .8);
+}
+
+.theme-day {
+    background: var(--bg-primary);
+
+    --bg-primary: rgb(65, 180, 250);
+
+    --text-primary: #fff;
+    --text-secondary: rgba(255,255,255,0.9);
+    --text-muted: rgba(255,255,255,0.5);
+
+    --glass-bg: rgba(255, 255, 255, 0.06);
+    --glass-bg-card: rgba(255, 255, 255, 0.18);
+    --glass-border: rgba(255, 255, 255, .04);
+    --glass-shadow: rgba(0, 0, 0, 0.20);
+
+    --status-online: #1F7D53;
+    --status-offline: #C84B31;
+
+    --accent-divider: rgba(255, 255, 255, .75);
 }
