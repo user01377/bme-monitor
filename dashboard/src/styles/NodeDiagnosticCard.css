@@ -55,11 +55,11 @@
 }
 
 .node-card__status--online {
-    color: #4ade80;
+    color: var(--status-online);
 }
 
 .node-card__status--offline {
-    color: #f87171;
+    color:  var(--status-offline);
 }
 
 .node-card__metrics {
