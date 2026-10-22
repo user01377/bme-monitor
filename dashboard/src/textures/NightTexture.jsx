@@ -1,7 +1,7 @@
 export default function NightTexture({
   dotCount = 200,
   minDotSize = 1.5,
-  maxDotSize = 3.5,
+  maxDotSize = 4,
   twinkleCount = 20,
 }) {
   const stars = Array.from({ length: dotCount }).map(() => ({
