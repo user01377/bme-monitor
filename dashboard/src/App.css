@@ -12,6 +12,9 @@
     --glass-border: rgba(255, 255, 255, .04);
     --glass-shadow: rgba(0, 0, 0, 0.20);
 
+    --status-online: #4ade80;
+    --status-offline: #f87171;
+
     --accent-divider: rgba(255, 255, 255, .8);
 }
 
@@ -28,6 +31,9 @@
     --glass-bg-card: rgba(255, 255, 255, 0.18);
     --glass-border: rgba(255, 255, 255, .04);
     --glass-shadow: rgba(0, 0, 0, 0.20);
+
+    --status-online: #1F7D53;
+    --status-offline: #C84B31;
 
     --accent-divider: rgba(255, 255, 255, .75);
 }
