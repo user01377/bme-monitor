@@ -8,12 +8,12 @@
         radial-gradient(
             ellipse at 85% 5%,
             rgba(255, 248, 205, 0.50),
-            transparent 35%
+            transparent 15%
         ),
         radial-gradient(
             ellipse at 15% 75%,
             rgba(175, 239, 255, 0.40),
-            transparent 45%
+            transparent 35%
         ),
         linear-gradient(
             160deg,
@@ -33,20 +33,20 @@
 
     background: radial-gradient(
         circle,
-        rgba(255, 248, 210, 0.95) 0%,
-        rgba(255, 241, 180, 0.55) 28%,
-        rgba(255, 236, 170, 0.20) 50%,
+        rgba(255, 248, 210, 0.55) 0%,
+        rgba(255, 241, 180, 0.28) 28%,
+        rgba(255, 236, 170, 0.10) 50%,
         rgba(255, 236, 170, 0.00) 72%
     );
 
-    filter: blur(8px);
+    filter: blur(16px);
 }
 
 .day-texture__blob {
     position: absolute;
     border-radius: 50%;
-    filter: blur(70px);
-    opacity: 0.45;
+    filter: blur(85px);
+    opacity: 0.25;
 }
 
 .day-texture__blob--one {
@@ -54,7 +54,7 @@
     left: 10%;
     width: 360px;
     height: 360px;
-    background: rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.14);
 }
 
 .day-texture__blob--two {
@@ -62,7 +62,7 @@
     left: -4%;
     width: 420px;
     height: 420px;
-    background: rgba(120, 230, 255, 0.28);
+    background: rgba(120, 230, 255, 0.16);
 }
 
 .day-texture__blob--three {
@@ -70,14 +70,14 @@
     right: 8%;
     width: 320px;
     height: 320px;
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.12);
 }
 
 .day-texture__cloud {
     position: absolute;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.16);
-    filter: blur(35px);
+    background: rgba(255, 255, 255, 0.09);
+    filter: blur(45px);
 }
 
 .day-texture__cloud--one {
@@ -99,18 +99,25 @@
 .day-texture__pattern {
     position: absolute;
     inset: 0;
-    opacity: 0.18;
+    opacity: 0.08;
+
     background-image:
-        radial-gradient(rgba(255,255,255,0.45) 1px, transparent 1px);
+        radial-gradient(
+            rgba(255, 255, 255, 0.30) 1px,
+            transparent 1px
+        );
+
     background-size: 26px 26px;
+
     mask-image: linear-gradient(
         180deg,
-        rgba(0,0,0,0.55),
-        rgba(0,0,0,0.15)
+        rgba(0, 0, 0, 0.45),
+        rgba(0, 0, 0, 0.10)
     );
+
     -webkit-mask-image: linear-gradient(
         180deg,
-        rgba(0,0,0,0.55),
-        rgba(0,0,0,0.15)
+        rgba(0, 0, 0, 0.45),
+        rgba(0, 0, 0, 0.10)
     );
 }

@@ -7,9 +7,6 @@
     color: var(--text-primary);
     background: var(--glass-bg-card);
 
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-
     border: 1px solid var(--glass-border);
     border-radius: 20px;
     box-shadow: 0 8px 24px var(--glass-shadow);
