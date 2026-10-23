@@ -7,7 +7,7 @@
     --text-secondary: rgba(255,255,255,0.7);
     --text-muted: rgba(255,255,255,0.5);
 
-    --glass-bg: rgba(25, 20, 55, 0.95);
+    --glass-bg: rgba(25, 20, 55, .98);
     --glass-bg-card: rgb(55, 51, 81);
     --glass-border: rgba(255, 255, 255, .04);
     --glass-shadow: rgba(0, 0, 0, 0.20);
