@@ -1,14 +1,13 @@
 .theme-night {
     background: var(--bg-primary);
     
-    --bg-primary: rgb(25, 20, 55);
+    --bg-primary: rgb(9, 15, 51);
 
     --text-primary: #fff;
     --text-secondary: rgba(255,255,255,0.7);
     --text-muted: rgba(255,255,255,0.5);
-
-    --glass-bg: rgba(25, 20, 55, .98);
-    --glass-bg-card: rgb(55, 51, 81);
+    --glass-bg: rgba(14, 19, 58, .98);
+    --glass-bg-card: rgb(32, 39, 77);
     --glass-border: rgba(255, 255, 255, .04);
     --glass-shadow: rgba(0, 0, 0, 0.20);
 
