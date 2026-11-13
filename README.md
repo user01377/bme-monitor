@@ -1,4 +1,4 @@
-# BME280 IoT Environmental Monitoring System
+# BME Monitor
 
 A full-stack IoT environmental monitoring platform designed to collect, process, store, and visualize environmental telemetry from distributed ESP32 nodes equipped with BME280 sensors.
 
